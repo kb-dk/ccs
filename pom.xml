@@ -13,6 +13,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.0.2.RELEASE</version>
+        <relativePath/>
     </parent>
 
     <dependencies>
@@ -28,6 +29,38 @@
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-jasper</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20140107</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.17</version>
+        </dependency>
+        <dependency>
+            <groupId>com.canto</groupId>
+            <artifactId>cumulus</artifactId>
+            <version>10</version>
+<!--
+            <scope>system</scope> 
+            <systemPath>/usr/local/Cumulus_Java_SDK/CumulusJC.jar</systemPath>
+-->
+            <!-- systemPath>C:/Program Files/Canto/Cumulus Java SDK/CumulusJC.jar</systemPath -->
+        </dependency>
+        <!-- Install CumulusJC.jar by: mvn install:install-file -Dfile=/usr/local/Cumulus_Java_SDK/CumulusJC.jar -DgroupId=com.canto -DartifactId=cumulus -Dversion=10 -Dpackaging=jar -->
+        <dependency>
+           <groupId>dk.kb</groupId>
+           <artifactId>kb-cumulus-api</artifactId>
+           <version>0.1.2</version>
+           <exclusions>
+               <exclusion>
+                  <groupId>com.canto</groupId>
+                  <artifactId>cumulus</artifactId>
+               </exclusion>
+           </exclusions>
         </dependency>
     </dependencies>
 
