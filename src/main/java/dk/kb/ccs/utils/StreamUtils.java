@@ -1,0 +1,32 @@
+package dk.kb.ccs.utils;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+
+import dk.kb.cumulus.utils.ArgumentCheck;
+
+public class StreamUtils {
+
+    /**
+     * Extracts the content of an input stream as a string.
+     * @param is The input stream to extract.
+     * @return The string of the input stream.
+     * @throws IOException If the input stream cannot be read.
+     */
+    public static String extractInputStreamAsString(InputStream is) throws IOException {
+        ArgumentCheck.checkNotNull(is, "InputStream is");
+        StringBuffer res = new StringBuffer();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+            String line;
+            while((line = br.readLine()) != null) {
+                res.append(line);
+                res.append("\n");
+            }
+        }
+        
+        return res.toString();
+    }
+}

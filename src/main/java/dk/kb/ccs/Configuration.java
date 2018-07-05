@@ -34,6 +34,8 @@ import dk.kb.cumulus.utils.ArgumentCheck;
  *       - cat2
  *       - ...
  *   workflow_interval: $ interval for how often to run the workflows
+ *   solr_url: $ The base URL for the SOLR search
+ *   solr_filter_query: $ The filter query for the SOLR search
  *   
  *   MORE TO FOLLOW!!!
  */
@@ -58,6 +60,10 @@ public class Configuration {
 
     /** The interval for how often the workflow should run (time in millis).*/
     protected static final String CONF_WORKFLOW_INTERVAL = "workflow_interval";
+    /** The base URL for the SOLR.*/
+    protected static final String CONF_SOLR_URL = "solr_url";
+    /** The filter query for the SOLR searches.*/
+    protected static final String CONF_SOLR_FILTER_QUERY = "solr_filter_query";
     
     /** Whether Cumulus should have write access. */
     protected static final boolean CUMULUS_WRITE_ACCESS = true;
@@ -66,6 +72,10 @@ public class Configuration {
     protected final CumulusConfiguration cumulusConf;
     /** The interval for running the workflow.*/
     protected final Long workflowInterval;
+    /** The URL for the SOLR.*/
+    protected final String solrUrl;
+    /** The filter query for the SOLR search.*/
+    protected final String solrFilterQuery;
 
     /** 
      * Constructor.
@@ -93,10 +103,16 @@ public class Configuration {
             
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_WORKFLOW_INTERVAL), 
                     "Configuration must contain the '" + CONF_WORKFLOW_INTERVAL + "' element.");
+            ArgumentCheck.checkTrue(confMap.containsKey(CONF_SOLR_URL), 
+                    "Configuration must contain the '" + CONF_SOLR_URL + "' element.");
+            ArgumentCheck.checkTrue(confMap.containsKey(CONF_SOLR_FILTER_QUERY), 
+                    "Configuration must contain the '" + CONF_SOLR_FILTER_QUERY + "' element.");
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_CUMULUS), 
                     "Configuration must contain the '" + CONF_CUMULUS + "' element.");
             
             this.workflowInterval = Long.valueOf((Integer) confMap.get(CONF_WORKFLOW_INTERVAL));
+            this.solrUrl = (String) confMap.get(CONF_SOLR_URL);
+            this.solrFilterQuery = (String) confMap.get(CONF_SOLR_FILTER_QUERY);
             this.cumulusConf = loadCumulusConfiguration((Map<String, Object>) confMap.get(CONF_CUMULUS));
         }
     }
@@ -117,7 +133,8 @@ public class Configuration {
                 "Missing Cumulus element '" + CONF_CUMULUS_CATALOG + "'");
         
         return new CumulusConfiguration(CUMULUS_WRITE_ACCESS, (String) map.get(CONF_CUMULUS_SERVER), 
-                (String) map.get(CONF_CUMULUS_USERNAME), (String) map.get(CONF_CUMULUS_PASSWORD), (List<String>) map.get(CONF_CUMULUS_CATALOG));
+                (String) map.get(CONF_CUMULUS_USERNAME), (String) map.get(CONF_CUMULUS_PASSWORD), 
+                (List<String>) map.get(CONF_CUMULUS_CATALOG));
     }
     
     /** @return The configuration for Cumulus.*/
@@ -129,7 +146,17 @@ public class Configuration {
     public Long getWorkflowInterval() {
         return workflowInterval;
     }
-        
+    
+    /** @return The URL for the SOLR.*/
+    public String getSolrUrl() {
+        return solrUrl;
+    }
+    
+    /** @return The filter query for the SOLR search.*/
+    public String getSolrFilterQuery() {
+        return solrFilterQuery;
+    }
+    
     /**
      * We only allow 1 catalog, so our instantiation of the Cumulus configuration has only one catalog in its 
      * list of catalogs. Thus returning the first and only catalog.

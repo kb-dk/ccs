@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import dk.kb.ccs.Configuration;
-import dk.kb.ccs.CumulusRetriever;
+import dk.kb.ccs.CumulusWrapper;
 import dk.kb.ccs.workflow.steps.CrowdReturnStep;
 import dk.kb.ccs.workflow.steps.WorkflowStep;
 
@@ -33,12 +33,15 @@ public class CCSWorkflow extends TimerTask {
     /** The status of this workflow.*/
     protected String status = "Has not run yet";
     
-    /** The configuration.*/
+    /** The configuration. Auto-wired.*/
     @Autowired
     protected Configuration conf;
     /** The Cumulus retriever.*/
     @Autowired
-    protected CumulusRetriever cumulusRetriever;
+    protected CumulusWrapper cumulusRetriever;
+    /** The Cumulus retriever.*/
+    @Autowired
+    protected CumulusWrapper cumulusWrapper;
 
     /** The steps for the workflow.*/
     protected List<WorkflowStep> steps = new ArrayList<WorkflowStep>();
