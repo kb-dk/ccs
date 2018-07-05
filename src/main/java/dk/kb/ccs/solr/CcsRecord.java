@@ -1,5 +1,7 @@
 package dk.kb.ccs.solr;
 
+import java.util.List;
+
 import org.apache.solr.common.SolrDocument;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -48,7 +50,7 @@ public class CcsRecord {
     public static final String JSON_FIELD_FOR_georeference = "dcterms_spatial";
     
     
-    public static final String JSON_ARRAY_STRING_SEPARATOR = ",";
+    public static final String ARRAY_STRING_SEPARATOR = ",";
     
     
     /** The name of the record.*/
@@ -162,7 +164,7 @@ public class CcsRecord {
                     return array.getString(0);
                 }
                 
-                return StringUtils.extractJSONArray(array, JSON_ARRAY_STRING_SEPARATOR);
+                return StringUtils.extractJSONArray(array, ARRAY_STRING_SEPARATOR);
             } else {
                 return (String) o;
             }
@@ -179,7 +181,18 @@ public class CcsRecord {
      */
     protected String getSolrFieldValue(SolrDocument solrData, String path) {
         if(solrData.containsKey(path)) {
-            return (String) solrData.getFieldValue(path);
+            Object o = solrData.get(path);
+            if(o instanceof List) {
+                List<String> array = (List<String>) o;
+                if(array.size() == 0) {
+                    return null;
+                } else if(array.size() == 1) {
+                    return array.get(0);
+                }
+                
+                return StringUtils.extractSolrArray(array, ARRAY_STRING_SEPARATOR);
+            }
+            return o.toString();
         } else {
             return null;
         }

@@ -87,7 +87,7 @@ public abstract class WorkflowStep {
     /**
      * The method for the step to implement.
      */
-    protected abstract void runStep();
+    protected abstract void runStep() throws Exception;
     
     /**
      * @return The human readable name of the step.

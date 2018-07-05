@@ -54,4 +54,25 @@ public class StringUtils {
         }
         return listToString(res, separator);
     }
+    /**
+     * Method for extracting a JSON array as a single string.
+     * @param array The JSON array.
+     * @param separator The separator between the elements of the array.
+     * @return The string with the elements.
+     */
+    public static String extractSolrArray(List<String> array, String separator) {
+        ArgumentCheck.checkNotNull(separator, "String separator");
+        if(array == null || array.size() == 0) {
+            return EMPTY_LIST;
+        }
+        List<String> res = new ArrayList<String>();
+        
+        for(int i = 0; i < array.size(); i++) {
+            String s = array.get(i);
+            if(!res.contains(s)) {
+                res.add(s);
+            }
+        }
+        return listToString(res, separator);
+    }
 }

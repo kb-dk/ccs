@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import dk.kb.ccs.Configuration;
-import dk.kb.ccs.CumulusWrapper;
 
 public class SolrRetriever {
     /** The log.*/
@@ -29,11 +28,12 @@ public class SolrRetriever {
     protected Configuration conf;
 
     /**
-     * Retrieves the 
-     * @return
-     * @throws IOException
+     * Retrieves the list of IDs of crowd sourced records from the SOLR index.
+     * It should not find the records, which have any other last_modified_by than 'crowd'. 
+     * @return The list of IDs for the crowd sourced records.
+     * @throws IOException If it fails.
      */
-    public List<String> getIDsForCrowd() throws IOException {
+    public List<String> findIDsForCrowd() throws IOException {
         SolrClient client = new HttpSolrClient.Builder(conf.getSolrUrl()).build();
         
         SolrQuery query = new SolrQuery();
@@ -58,6 +58,12 @@ public class SolrRetriever {
         }
     }
     
+    /**
+     * Retrieves the SOLR record for a given ID, and then returns it as a CcsRecord.
+     * @param id The ID for the solr record to find.
+     * @return The CcsRecord for the 
+     * @throws IOException
+     */
     public CcsRecord getRecordForId(String id) throws IOException {
         SolrClient client = new HttpSolrClient.Builder(conf.getSolrUrl()).build();
         
@@ -78,7 +84,7 @@ public class SolrRetriever {
                 log.warn("Found more than one document for id '" + id + "'. Returning the first.");
             }
             return new CcsRecord(results.get(0), CATALOG_NAME);
-        } catch (Exception e) {
+        } catch (SolrServerException e) {
             throw new IOException("Issue extracting data from Solr.", e);
         }
     }
@@ -86,5 +92,4 @@ public class SolrRetriever {
     public void updateRecord(String id) {
         // TODO
     }
-    
 }
