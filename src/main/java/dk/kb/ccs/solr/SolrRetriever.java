@@ -8,14 +8,20 @@ import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import dk.kb.ccs.Configuration;
 
+/**
+ * Class for handling the interactions with SOLR.
+ * @author jolf
+ */
 public class SolrRetriever {
     /** The log.*/
     protected static final Logger log = LoggerFactory.getLogger(SolrRetriever.class);
@@ -89,7 +95,27 @@ public class SolrRetriever {
         }
     }
     
-    public void updateRecord(String id) {
-        // TODO
+    /**
+     * Updates the SOLR record with the given id, so it has this service as the 'last_modified_by' user. 
+     * @param id The ID of the SOLR record to update.
+     * @throws IOException If it fails to update.
+     */
+    public void updateRecord(String id) throws IOException {
+        SolrClient client = new HttpSolrClient.Builder(conf.getSolrUrl()).build();
+        
+        try {
+            SolrInputDocument updateDoc = new SolrInputDocument();
+            updateDoc.addField("id", id);
+            
+            // TODO: is this the correct value for the modify-user update?
+            updateDoc.addField("cobject_last_modified_by_ssi", "ccs");
+            
+            UpdateRequest request = new UpdateRequest();
+            request.add(updateDoc);
+            request.process(client);
+            client.commit();
+        } catch (SolrServerException e) {
+            throw new IOException("Issue occured while updating Solr document.", e);
+        }
     }
 }
