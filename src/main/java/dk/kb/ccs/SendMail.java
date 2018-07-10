@@ -8,13 +8,20 @@ import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
 import javax.activation.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 
 public class SendMail {
+    InputStream inputStream;
 
     public static void main(String [] args) {
-        String to = "nkh@kb.dk";
-        String from = "naderak@gmail.com";
+        Properties prop = new Properties();
+        String propFileName = "application.properties";
+
+        String to = prop.getProperty("mail.to");
+        String from = prop.getProperty("mail.from");
         String host = "post.kb.dk";
         Properties properties = System.getProperties();
         properties.setProperty("mail.smtp.host", host);
