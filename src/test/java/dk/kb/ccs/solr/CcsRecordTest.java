@@ -13,20 +13,24 @@ import dk.kb.ccs.utils.StreamUtils;
 
 @SpringBootTest
 public class CcsRecordTest {
-    
-    @Test
-    public void testInstantiation() throws Exception {
+
+    public static CcsRecord getTestRecord(String catalogName) throws Exception{
         File f = new File("src/test/resources/luftfoto-solr.json");
         Assert.assertTrue(f.isFile());
-        
-        String catalogName = UUID.randomUUID().toString();
         
         String content = StreamUtils.extractInputStreamAsString(new FileInputStream(f));
         JSONObject json = new JSONObject(content);
         JSONObject response = json.getJSONObject("response");
         JSONObject recordJson = response.getJSONArray("docs").getJSONObject(0);
 
-        CcsRecord record = new CcsRecord(recordJson, catalogName);
+        return new CcsRecord(recordJson, catalogName);
+    }
+    
+    
+    @Test
+    public void testInstantiation() throws Exception {
+        String catalogName = UUID.randomUUID().toString();
+        CcsRecord record = getTestRecord(catalogName);
         
         Assert.assertNotNull(record);
         Assert.assertEquals(catalogName, record.getCatalogName());
@@ -41,7 +45,7 @@ public class CcsRecordTest {
         Assert.assertEquals("1234", record.getPostnummer());
         Assert.assertEquals("Langsted", record.getBy());
         Assert.assertEquals("sogn", record.getSogn());
-        Assert.assertEquals("1234567890", record.getMaterikelnummer());
+        Assert.assertEquals("1234567890", record.getMatrikelnummer());
         Assert.assertEquals("noten står her", record.getNote());
         // TODO: Needs to included in the JSON record from SOLR.
         Assert.assertNull(record.getKommentar());

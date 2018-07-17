@@ -79,7 +79,7 @@ public class CumulusWrapper {
        setFieldValueInRecord(record, "Crowd_Postnummer", ccsRecord.getPostnummer());
        setFieldValueInRecord(record, "Crowd_By", ccsRecord.getBy());
        setFieldValueInRecord(record, "Crowd_Sogn", ccsRecord.getSogn());
-       setFieldValueInRecord(record, "Crowd_Materikelnummer", ccsRecord.getMaterikelnummer());
+       setFieldValueInRecord(record, "Crowd_Matrikelnummer", ccsRecord.getMatrikelnummer());
        setFieldValueInRecord(record, "Crowd_Note", ccsRecord.getNote());
        setFieldValueInRecord(record, "Crowd_Kommentar", ccsRecord.getKommentar());
        setFieldValueInRecord(record, "Crowd_Emneord", ccsRecord.getEmneord());

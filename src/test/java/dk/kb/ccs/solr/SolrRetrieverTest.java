@@ -44,7 +44,7 @@ public class SolrRetrieverTest {
         Assert.assertEquals("1234", record.getPostnummer());
         Assert.assertEquals("Langsted", record.getBy());
         Assert.assertEquals("sogn", record.getSogn());
-        Assert.assertEquals("1234567890", record.getMaterikelnummer());
+        Assert.assertEquals("1234567890", record.getMatrikelnummer());
         Assert.assertEquals("noten står her", record.getNote());
         // TODO: Needs to included in the JSON record from SOLR.
         Assert.assertNull(record.getKommentar());

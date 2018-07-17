@@ -18,38 +18,38 @@ import dk.kb.cumulus.utils.ArgumentCheck;
 public class CcsRecord {
     /** The JSON field name for the record name.*/
     public static final String JSON_FIELD_FOR_RECORD_NAME = "local_id_ssi";
-    /** The JSON field name for the record name.*/
+    /** The JSON field name for the title.*/
     public static final String JSON_FIELD_FOR_TITEL = "title_tdsim";
-    /** The JSON field name for the record name.*/
-    public static final String JSON_FIELD_FOR_person = "cobject_person_ssim";
-    /** The JSON field name for the record name.*/
-    public static final String JSON_FIELD_FOR_bygningsnavn = "area_building_tsim";
-    /** The JSON field name for the record name.*/
-    public static final String JSON_FIELD_FOR_sted = "cobject_location_ssim";
-    /** The JSON field name for the record name.*/
-    public static final String JSON_FIELD_FOR_vejnavn = "citySection_street_tsim";
-    /** The JSON field name for the record name.*/
-    public static final String JSON_FIELD_FOR_husnummer = "citySection_housenumber_tsim";
-    /** The JSON field name for the record name.*/
-    public static final String JSON_FIELD_FOR_lokalitet = "cobject_building_ssim";
-    /** The JSON field name for the record name.*/
-    public static final String JSON_FIELD_FOR_postnummer = "citySection_zipcode_tsim";
-    /** The JSON field name for the record name.*/
-    public static final String JSON_FIELD_FOR_by = "area_area_tsim";
-    /** The JSON field name for the record name.*/
-    public static final String JSON_FIELD_FOR_sogn = "area_parish_tsim";
-    /** The JSON field name for the record name.*/
-    public static final String JSON_FIELD_FOR_materikelnummer = "area_cadastre_tsim";
-    /** The JSON field name for the record name.*/
-    public static final String JSON_FIELD_FOR_note = "description_tsim";
-    /** The JSON field name for the record name.*/
-    public static final String JSON_FIELD_FOR_kommentar = "TODO";
-    /** The JSON field name for the record name.*/
-    public static final String JSON_FIELD_FOR_emneord = "subject_tdsim";
-    /** The JSON field name for the record name.*/
-    public static final String JSON_FIELD_FOR_georeference = "dcterms_spatial";
+    /** The JSON field name for the person.*/
+    public static final String JSON_FIELD_FOR_PERSON = "cobject_person_ssim";
+    /** The JSON field name for the bygningsnavn.*/
+    public static final String JSON_FIELD_FOR_BYGNINGSNAVN = "area_building_tsim";
+    /** The JSON field name for the sted.*/
+    public static final String JSON_FIELD_FOR_STED = "cobject_location_ssim";
+    /** The JSON field name for the vejnavn.*/
+    public static final String JSON_FIELD_FOR_VEJNAVN = "citySection_street_tsim";
+    /** The JSON field name for the husnummer.*/
+    public static final String JSON_FIELD_FOR_HUSNUMMER = "citySection_housenumber_tsim";
+    /** The JSON field name for the lokalitet.*/
+    public static final String JSON_FIELD_FOR_LOKALITET = "cobject_building_ssim";
+    /** The JSON field name for the postnummer.*/
+    public static final String JSON_FIELD_FOR_POSTNUMMER = "citySection_zipcode_tsim";
+    /** The JSON field name for the by.*/
+    public static final String JSON_FIELD_FOR_BY = "area_area_tsim";
+    /** The JSON field name for the sogn.*/
+    public static final String JSON_FIELD_FOR_SOGN = "area_parish_tsim";
+    /** The JSON field name for the matrikelnummer.*/
+    public static final String JSON_FIELD_FOR_MATRIKELNUMMER = "area_cadastre_tsim";
+    /** The JSON field name for the note.*/
+    public static final String JSON_FIELD_FOR_NOTE = "description_tsim";
+    /** The JSON field name for the kommentar.*/
+    public static final String JSON_FIELD_FOR_KOMMENTAR = "TODO";
+    /** The JSON field name for the emneord.*/
+    public static final String JSON_FIELD_FOR_EMNEORD = "subject_tdsim";
+    /** The JSON field name for the georeference.*/
+    public static final String JSON_FIELD_FOR_GEOREFERENCE = "dcterms_spatial";
     
-    
+    /** The array separator.*/
     public static final String ARRAY_STRING_SEPARATOR = ",";
     
     
@@ -78,8 +78,8 @@ public class CcsRecord {
     protected String by;
     /** The sogn, imported as crowd_sogn.*/
     protected String sogn;
-    /** The materikelnummer, imported as crowd_materikelnummer.*/
-    protected String materikelnummer;
+    /** The materikelnummer, imported as crowd_matrikelnummer.*/
+    protected String matrikelnummer;
     /** The note, imported as crowd_note.*/
     protected String note;
     /** The kommentar, imported as crowd_kommentar.*/
@@ -102,20 +102,20 @@ public class CcsRecord {
         this.catalogName = catalogName;
         
         this.titel = getJSONFieldValue(solrData, JSON_FIELD_FOR_TITEL);
-        this.person = getJSONFieldValue(solrData, JSON_FIELD_FOR_person);
-        this.bygningsnavn = getJSONFieldValue(solrData, JSON_FIELD_FOR_bygningsnavn);
-        this.sted = getJSONFieldValue(solrData, JSON_FIELD_FOR_sted);
-        this.vejnavn = getJSONFieldValue(solrData, JSON_FIELD_FOR_vejnavn);
-        this.husnummer = getJSONFieldValue(solrData, JSON_FIELD_FOR_husnummer);
-        this.lokalitet = getJSONFieldValue(solrData, JSON_FIELD_FOR_lokalitet);
-        this.postnummer = getJSONFieldValue(solrData, JSON_FIELD_FOR_postnummer);
-        this.by = getJSONFieldValue(solrData, JSON_FIELD_FOR_by);
-        this.sogn = getJSONFieldValue(solrData, JSON_FIELD_FOR_sogn);
-        this.materikelnummer = getJSONFieldValue(solrData, JSON_FIELD_FOR_materikelnummer);
-        this.note = getJSONFieldValue(solrData, JSON_FIELD_FOR_note);
-        this.kommentar = getJSONFieldValue(solrData, JSON_FIELD_FOR_kommentar);
-        this.emneord = getJSONFieldValue(solrData, JSON_FIELD_FOR_emneord);
-        this.georeference = getJSONFieldValue(solrData, JSON_FIELD_FOR_georeference);
+        this.person = getJSONFieldValue(solrData, JSON_FIELD_FOR_PERSON);
+        this.bygningsnavn = getJSONFieldValue(solrData, JSON_FIELD_FOR_BYGNINGSNAVN);
+        this.sted = getJSONFieldValue(solrData, JSON_FIELD_FOR_STED);
+        this.vejnavn = getJSONFieldValue(solrData, JSON_FIELD_FOR_VEJNAVN);
+        this.husnummer = getJSONFieldValue(solrData, JSON_FIELD_FOR_HUSNUMMER);
+        this.lokalitet = getJSONFieldValue(solrData, JSON_FIELD_FOR_LOKALITET);
+        this.postnummer = getJSONFieldValue(solrData, JSON_FIELD_FOR_POSTNUMMER);
+        this.by = getJSONFieldValue(solrData, JSON_FIELD_FOR_BY);
+        this.sogn = getJSONFieldValue(solrData, JSON_FIELD_FOR_SOGN);
+        this.matrikelnummer = getJSONFieldValue(solrData, JSON_FIELD_FOR_MATRIKELNUMMER);
+        this.note = getJSONFieldValue(solrData, JSON_FIELD_FOR_NOTE);
+        this.kommentar = getJSONFieldValue(solrData, JSON_FIELD_FOR_KOMMENTAR);
+        this.emneord = getJSONFieldValue(solrData, JSON_FIELD_FOR_EMNEORD);
+        this.georeference = getJSONFieldValue(solrData, JSON_FIELD_FOR_GEOREFERENCE);
     }
     
     /**
@@ -131,20 +131,20 @@ public class CcsRecord {
         this.catalogName = catalogName;
         
         this.titel = getSolrFieldValue(solrData, JSON_FIELD_FOR_TITEL);
-        this.person = getSolrFieldValue(solrData, JSON_FIELD_FOR_person);
-        this.bygningsnavn = getSolrFieldValue(solrData, JSON_FIELD_FOR_bygningsnavn);
-        this.sted = getSolrFieldValue(solrData, JSON_FIELD_FOR_sted);
-        this.vejnavn = getSolrFieldValue(solrData, JSON_FIELD_FOR_vejnavn);
-        this.husnummer = getSolrFieldValue(solrData, JSON_FIELD_FOR_husnummer);
-        this.lokalitet = getSolrFieldValue(solrData, JSON_FIELD_FOR_lokalitet);
-        this.postnummer = getSolrFieldValue(solrData, JSON_FIELD_FOR_postnummer);
-        this.by = getSolrFieldValue(solrData, JSON_FIELD_FOR_by);
-        this.sogn = getSolrFieldValue(solrData, JSON_FIELD_FOR_sogn);
-        this.materikelnummer = getSolrFieldValue(solrData, JSON_FIELD_FOR_materikelnummer);
-        this.note = getSolrFieldValue(solrData, JSON_FIELD_FOR_note);
-        this.kommentar = getSolrFieldValue(solrData, JSON_FIELD_FOR_kommentar);
-        this.emneord = getSolrFieldValue(solrData, JSON_FIELD_FOR_emneord);
-        this.georeference = getSolrFieldValue(solrData, JSON_FIELD_FOR_georeference);
+        this.person = getSolrFieldValue(solrData, JSON_FIELD_FOR_PERSON);
+        this.bygningsnavn = getSolrFieldValue(solrData, JSON_FIELD_FOR_BYGNINGSNAVN);
+        this.sted = getSolrFieldValue(solrData, JSON_FIELD_FOR_STED);
+        this.vejnavn = getSolrFieldValue(solrData, JSON_FIELD_FOR_VEJNAVN);
+        this.husnummer = getSolrFieldValue(solrData, JSON_FIELD_FOR_HUSNUMMER);
+        this.lokalitet = getSolrFieldValue(solrData, JSON_FIELD_FOR_LOKALITET);
+        this.postnummer = getSolrFieldValue(solrData, JSON_FIELD_FOR_POSTNUMMER);
+        this.by = getSolrFieldValue(solrData, JSON_FIELD_FOR_BY);
+        this.sogn = getSolrFieldValue(solrData, JSON_FIELD_FOR_SOGN);
+        this.matrikelnummer = getSolrFieldValue(solrData, JSON_FIELD_FOR_MATRIKELNUMMER);
+        this.note = getSolrFieldValue(solrData, JSON_FIELD_FOR_NOTE);
+        this.kommentar = getSolrFieldValue(solrData, JSON_FIELD_FOR_KOMMENTAR);
+        this.emneord = getSolrFieldValue(solrData, JSON_FIELD_FOR_EMNEORD);
+        this.georeference = getSolrFieldValue(solrData, JSON_FIELD_FOR_GEOREFERENCE);
     }
 
     /**
@@ -247,9 +247,9 @@ public class CcsRecord {
     public String getSogn() {
         return sogn;
     }
-    /** @return The materikelnummer, imported as crowd_materikelnummer.*/
-    public String getMaterikelnummer() {
-        return materikelnummer;
+    /** @return The matrikelnummer, imported as crowd_materikelnummer.*/
+    public String getMatrikelnummer() {
+        return matrikelnummer;
     }
     /** @return The note, imported as crowd_note.*/
     public String getNote() {
