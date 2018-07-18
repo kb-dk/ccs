@@ -15,6 +15,7 @@ import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import dk.kb.ccs.Configuration;
 
@@ -22,12 +23,31 @@ import dk.kb.ccs.Configuration;
  * Class for handling the interactions with SOLR.
  * @author jolf
  */
+@Component
 public class SolrRetriever {
     /** The log.*/
     protected static final Logger log = LoggerFactory.getLogger(SolrRetriever.class);
     
     /** TODO: extract the catalog name from the SOLR data instead.*/
-    protected static final String CATALOG_NAME = "luftfoto";
+    protected static final String CATALOG_NAME = "Luftfoto OM";
+    
+    protected static final String FIELD_LIST = CcsRecord.JSON_FIELD_FOR_RECORD_NAME 
+            + "," + CcsRecord.JSON_FIELD_FOR_TITEL
+            + "," + CcsRecord.JSON_FIELD_FOR_PERSON 
+            + "," + CcsRecord.JSON_FIELD_FOR_BYGNINGSNAVN 
+            + "," + CcsRecord.JSON_FIELD_FOR_STED 
+            + "," + CcsRecord.JSON_FIELD_FOR_VEJNAVN 
+            + "," + CcsRecord.JSON_FIELD_FOR_HUSNUMMER 
+            + "," + CcsRecord.JSON_FIELD_FOR_LOKALITET 
+            + "," + CcsRecord.JSON_FIELD_FOR_POSTNUMMER 
+            + "," + CcsRecord.JSON_FIELD_FOR_BY 
+            + "," + CcsRecord.JSON_FIELD_FOR_SOGN 
+            + "," + CcsRecord.JSON_FIELD_FOR_MATRIKELNUMMER 
+            + "," + CcsRecord.JSON_FIELD_FOR_NOTE 
+            + "," + CcsRecord.JSON_FIELD_FOR_KOMMENTAR 
+            + "," + CcsRecord.JSON_FIELD_FOR_EMNEORD 
+            + "," + CcsRecord.JSON_FIELD_FOR_GEOREFERENCE;
+    
     
     /** The configuration. Auto-wired.*/
     @Autowired
@@ -54,6 +74,7 @@ public class SolrRetriever {
             List<String> res = new ArrayList<String>();
             QueryResponse response = client.query(query);
             SolrDocumentList results = response.getResults();
+            log.info("Found # of solr results: " + results.size());
             
             for (int i = 0; i < results.size(); ++i) {
                 res.add((String) results.get(i).getFieldValue("id"));
@@ -76,6 +97,7 @@ public class SolrRetriever {
         SolrQuery query = new SolrQuery();
         query.setQuery("id:" + id);
         query.addFilterQuery(conf.getSolrFilterQuery());
+//        query.setFields(FIELD_LIST);
         query.setStart(0);
         query.set("defType", "edismax");
         
@@ -83,12 +105,14 @@ public class SolrRetriever {
             QueryResponse response = client.query(query);
             SolrDocumentList results = response.getResults();
             
+            log.info("SOLR query: " + query.toString());
             if(results.size() == 0) {
                 log.warn("Could not find the document for '" + id + "'. Returning a null.");
                 return null;
             } else if(results.size() > 1) {
                 log.warn("Found more than one document for id '" + id + "'. Returning the first.");
             }
+            log.info("Creating a CCS record from: " + results.get(0));
             return new CcsRecord(results.get(0), CATALOG_NAME);
         } catch (SolrServerException e) {
             throw new IOException("Issue extracting data from Solr.", e);

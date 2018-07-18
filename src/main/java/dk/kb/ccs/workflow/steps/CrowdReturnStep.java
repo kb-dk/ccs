@@ -49,6 +49,7 @@ public class CrowdReturnStep extends WorkflowStep {
      * @throws IOException If it fails to find or update the record.
      */
     protected void handleCrowdSourcedRecord(String id) throws IOException {
+        log.info("Handling the crowd sourced material for id '" + id + "'.");
         CcsRecord record = solrRetriever.getRecordForId(id);
         cumulusWrapper.ccsUpdate(record);
         solrRetriever.updateRecord(id);

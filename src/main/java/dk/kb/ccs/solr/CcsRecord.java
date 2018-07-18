@@ -124,8 +124,10 @@ public class CcsRecord {
      * @param catalogName The name of the catalog
      */
     public CcsRecord(SolrDocument solrData, String catalogName) {
-        ArgumentCheck.checkTrue(solrData.containsKey(JSON_FIELD_FOR_RECORD_NAME), 
-                "JSONObject solrData must contain the field '" + JSON_FIELD_FOR_RECORD_NAME + "'");
+        ArgumentCheck.checkNotNull(solrData, "SolrDocument solrData");
+        ArgumentCheck.checkNotNullOrEmpty(catalogName, "String catalogName");
+//        ArgumentCheck.checkTrue(solrData.containsKey(JSON_FIELD_FOR_RECORD_NAME), 
+//                "JSONObject solrData must contain the field '" + JSON_FIELD_FOR_RECORD_NAME + "'");
         
         this.recordName = (String) solrData.getFieldValue(JSON_FIELD_FOR_RECORD_NAME);
         this.catalogName = catalogName;
