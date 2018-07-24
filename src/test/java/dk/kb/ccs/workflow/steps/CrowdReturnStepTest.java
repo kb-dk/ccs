@@ -1,6 +1,5 @@
 package dk.kb.ccs.workflow.steps;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -10,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import dk.kb.ccs.CumulusWrapper;
 import dk.kb.ccs.solr.CcsRecord;
 import dk.kb.ccs.solr.SolrRetriever;
+import dk.kb.ccs.solr.SolrSearchResult;
 
 @SpringBootTest
 public class CrowdReturnStepTest {
@@ -23,7 +23,9 @@ public class CrowdReturnStepTest {
         CrowdReturnStep step = new CrowdReturnStep(cumulusWrapper, solrRetriever);
         
         String id = UUID.randomUUID().toString();
-        Mockito.when(solrRetriever.findIDsForCrowd()).thenReturn(Arrays.asList(id));
+        SolrSearchResult res = new SolrSearchResult();
+        res.addId(id);
+        Mockito.when(solrRetriever.findIDsForCrowd()).thenReturn(res);
         Mockito.when(solrRetriever.getRecordForId(Mockito.eq(id))).thenReturn(record);
         
         step.run();

@@ -73,24 +73,25 @@ public class SolrRetriever {
      * @return The list of IDs for the crowd sourced records.
      * @throws IOException If it fails.
      */
-    public List<String> findIDsForCrowd() throws IOException {
+    public SolrSearchResult findIDsForCrowd() throws IOException {
         try (SolrClient client = new HttpSolrClient.Builder(conf.getSolrUrl()).build()) {
             SolrQuery query = new SolrQuery();
             query.setQuery("-" + FIELD_MODIFY_USER + ":" + CROWD_SERVICE_MODIFY_USER);
-//            query.setQuery("id:\"/images/luftfo/2011/maj/luftfoto/object182167\"");
             query.addFilterQuery(conf.getSolrFilterQuery());
             query.setFields(FIELD_ID);
             query.setStart(0);
+            query.setRows(conf.getSolrMaxResults());
             query.set(SOLR_ARGUMENT_DEFINITION_TYPE, DEF_TYPE_EDISMAX);
             
-            List<String> res = new ArrayList<String>();
+            SolrSearchResult res = new SolrSearchResult();
             QueryResponse response = client.query(query);
             SolrDocumentList results = response.getResults();
             log.info("Found # of solr results: " + results.size());
             
             for (int i = 0; i < results.size(); ++i) {
-                res.add((String) results.get(i).getFieldValue(FIELD_ID));
+                res.addId((String) results.get(i).getFieldValue(FIELD_ID));
             }
+            res.setHasMoreIds(results.getNumFound() > results.size());
             return res;
         } catch (SolrServerException e) {
             throw new IOException("Issue extracting data from Solr.", e);

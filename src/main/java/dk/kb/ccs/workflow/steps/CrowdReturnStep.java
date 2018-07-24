@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import dk.kb.ccs.CumulusWrapper;
 import dk.kb.ccs.solr.CcsRecord;
 import dk.kb.ccs.solr.SolrRetriever;
+import dk.kb.ccs.solr.SolrSearchResult;
 
 /**
  * Step for retrieving changed records from COP, extracts the crowd-sourced fields from  
@@ -34,10 +35,12 @@ public class CrowdReturnStep extends WorkflowStep {
     
     @Override
     protected void runStep() throws IOException {
-        List<String> ids = solrRetriever.findIDsForCrowd();
-        for(String id : ids) {
-            handleCrowdSourcedRecord(id);
+        SolrSearchResult res = solrRetriever.findIDsForCrowd();
+        for(String id : res.getIds()) {
+            System.err.println(id);
+//            handleCrowdSourcedRecord(id);
         }
+        System.err.println("Has more results: " + res.getHasMoreResults());
         // TODO needs some reporting.
     }
     

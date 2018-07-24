@@ -19,8 +19,9 @@ public class SolrRetrieverTest {
         SolrRetriever solr = new SolrRetriever();
         solr.conf = conf;
         
-        List<String> ids = solr.findIDsForCrowd();
-        System.err.println(ids);
+        SolrSearchResult ids = solr.findIDsForCrowd();
+        System.err.println(ids.getIds());
+        System.err.println(ids.hasMoreResults);
     }
 
     @Test
