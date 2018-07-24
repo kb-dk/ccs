@@ -14,7 +14,7 @@ import dk.kb.ccs.utils.StreamUtils;
 @SpringBootTest
 public class CcsRecordTest {
 
-    public static CcsRecord getTestRecord(String catalogName) throws Exception{
+    public static CcsRecord getTestRecord() throws Exception{
         File f = new File("src/test/resources/luftfoto-solr.json");
         Assert.assertTrue(f.isFile());
         
@@ -23,17 +23,16 @@ public class CcsRecordTest {
         JSONObject response = json.getJSONObject("response");
         JSONObject recordJson = response.getJSONArray("docs").getJSONObject(0);
 
-        return new CcsRecord(recordJson, catalogName);
+        return new CcsRecord(recordJson);
     }
     
     
     @Test
     public void testInstantiation() throws Exception {
-        String catalogName = UUID.randomUUID().toString();
-        CcsRecord record = getTestRecord(catalogName);
+        CcsRecord record = getTestRecord();
         
         Assert.assertNotNull(record);
-        Assert.assertEquals(catalogName, record.getCatalogName());
+        Assert.assertEquals("Luftfoto OM", record.getCatalogName());
         Assert.assertEquals("A088673_13.tif", record.getRecordName());
         Assert.assertEquals("Jensen, Iris & Børge, Langsted - 1988 -", record.getTitel());
         Assert.assertEquals("Iris og Børge Jensen, gårdejere", record.getPerson());

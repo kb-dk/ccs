@@ -2,7 +2,9 @@ package dk.kb.ccs.solr;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -28,9 +30,7 @@ public class SolrRetriever {
     /** The log.*/
     protected static final Logger log = LoggerFactory.getLogger(SolrRetriever.class);
     
-    /** TODO: extract the catalog name from the SOLR data instead.*/
-    protected static final String CATALOG_NAME = "Luftfoto OM";
-    
+    /** The used fields.*/
     protected static final String FIELD_LIST = CcsRecord.JSON_FIELD_FOR_RECORD_NAME 
             + "," + CcsRecord.JSON_FIELD_FOR_TITEL
             + "," + CcsRecord.JSON_FIELD_FOR_PERSON 
@@ -48,6 +48,20 @@ public class SolrRetriever {
             + "," + CcsRecord.JSON_FIELD_FOR_EMNEORD 
             + "," + CcsRecord.JSON_FIELD_FOR_GEOREFERENCE;
     
+    /** The username in SOLR for the CumulusCrowdService.*/
+    protected static final String CROWD_SERVICE_MODIFY_USER = "ccs";
+    
+    /** The SOLR update action for setting a new value.*/
+    protected static final String SOLR_UPDATE_ACTION_SET = "set";
+    /** The SOLR argument for definition type.*/
+    protected static final String SOLR_ARGUMENT_DEFINITION_TYPE = "defType";
+    /** The definition type edismax.*/
+    protected static final String DEF_TYPE_EDISMAX = "edismax";
+    
+    /** The field name for the modify user.*/
+    protected static final String FIELD_MODIFY_USER = "cobject_last_modified_by_ssi";
+    /** The field name for the id.*/
+    protected static final String FIELD_ID = "id";
     
     /** The configuration. Auto-wired.*/
     @Autowired
@@ -55,29 +69,27 @@ public class SolrRetriever {
 
     /**
      * Retrieves the list of IDs of crowd sourced records from the SOLR index.
-     * It should not find the records, which have any other last_modified_by than 'crowd'. 
+     * It should not find the records, which have any other last_modified_by than 'ccs'. 
      * @return The list of IDs for the crowd sourced records.
      * @throws IOException If it fails.
      */
     public List<String> findIDsForCrowd() throws IOException {
-        SolrClient client = new HttpSolrClient.Builder(conf.getSolrUrl()).build();
-        
-        SolrQuery query = new SolrQuery();
-//        query.setQuery("cobject_last_modified_by_ssi:crowd");
-        query.setQuery("id:\"/images/luftfo/2011/maj/luftfoto/object182167\"");
-        query.addFilterQuery(conf.getSolrFilterQuery());
-        query.setFields("id");
-        query.setStart(0);
-        query.set("defType", "edismax");
-        
-        try {
+        try (SolrClient client = new HttpSolrClient.Builder(conf.getSolrUrl()).build()) {
+            SolrQuery query = new SolrQuery();
+            query.setQuery("-" + FIELD_MODIFY_USER + ":" + CROWD_SERVICE_MODIFY_USER);
+//            query.setQuery("id:\"/images/luftfo/2011/maj/luftfoto/object182167\"");
+            query.addFilterQuery(conf.getSolrFilterQuery());
+            query.setFields(FIELD_ID);
+            query.setStart(0);
+            query.set(SOLR_ARGUMENT_DEFINITION_TYPE, DEF_TYPE_EDISMAX);
+            
             List<String> res = new ArrayList<String>();
             QueryResponse response = client.query(query);
             SolrDocumentList results = response.getResults();
             log.info("Found # of solr results: " + results.size());
             
             for (int i = 0; i < results.size(); ++i) {
-                res.add((String) results.get(i).getFieldValue("id"));
+                res.add((String) results.get(i).getFieldValue(FIELD_ID));
             }
             return res;
         } catch (SolrServerException e) {
@@ -92,16 +104,12 @@ public class SolrRetriever {
      * @throws IOException
      */
     public CcsRecord getRecordForId(String id) throws IOException {
-        SolrClient client = new HttpSolrClient.Builder(conf.getSolrUrl()).build();
-        
-        SolrQuery query = new SolrQuery();
-        query.setQuery("id:" + id);
-        query.addFilterQuery(conf.getSolrFilterQuery());
-//        query.setFields(FIELD_LIST);
-        query.setStart(0);
-        query.set("defType", "edismax");
-        
-        try {
+        try (SolrClient client = new HttpSolrClient.Builder(conf.getSolrUrl()).build()) {
+            SolrQuery query = new SolrQuery();
+            query.setQuery(FIELD_ID + ":" + id);
+            query.addFilterQuery(conf.getSolrFilterQuery());
+            query.setStart(0);
+            query.set(SOLR_ARGUMENT_DEFINITION_TYPE, DEF_TYPE_EDISMAX);
             QueryResponse response = client.query(query);
             SolrDocumentList results = response.getResults();
             
@@ -113,7 +121,8 @@ public class SolrRetriever {
                 log.warn("Found more than one document for id '" + id + "'. Returning the first.");
             }
             log.info("Creating a CCS record from: " + results.get(0));
-            return new CcsRecord(results.get(0), CATALOG_NAME);
+            
+            return new CcsRecord(results.get(0));
         } catch (SolrServerException e) {
             throw new IOException("Issue extracting data from Solr.", e);
         }
@@ -125,14 +134,14 @@ public class SolrRetriever {
      * @throws IOException If it fails to update.
      */
     public void updateRecord(String id) throws IOException {
-        SolrClient client = new HttpSolrClient.Builder(conf.getSolrUrl()).build();
-        
-        try {
+        try (SolrClient client = new HttpSolrClient.Builder(conf.getSolrUrl()).build()) {
             SolrInputDocument updateDoc = new SolrInputDocument();
-            updateDoc.addField("id", id);
             
-            // TODO: is this the correct value for the modify-user update?
-            updateDoc.addField("cobject_last_modified_by_ssi", "ccs");
+            updateDoc.addField(FIELD_ID, id);
+            
+            Map<String,Object> fieldModifier = new HashMap<>(1);
+            fieldModifier.put(SOLR_UPDATE_ACTION_SET, CROWD_SERVICE_MODIFY_USER);
+            updateDoc.addField(FIELD_MODIFY_USER, fieldModifier);
             
             UpdateRequest request = new UpdateRequest();
             request.add(updateDoc);

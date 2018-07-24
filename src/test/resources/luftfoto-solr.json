@@ -71,6 +71,8 @@
         "cobject_person_tsim":["Iris og Børge Jensen, gårdejere",
           "Iris og Børge Jensen, gårdejere"],
         "cobject_last_modified_lsi":1530694182384,
+        "cobject_last_modified_by_ssi":"crowd",
+        "cumulus_catalog_ss":"Luftfoto OM",
         "ese_type_tsim":["IMAGE"],
         "ese_rights_tsim":["http://creativecommons.org/licenses/by-nc-nd/4.0/"],
         "ese_dataProvider_tsim":["The Royal Library: The National Library of Denmark and Copenhagen University Library"],

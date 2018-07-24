@@ -34,7 +34,7 @@ public class CumulusWrapperTest {
     @Test
     public void testUpdate() throws Exception {
         
-        CcsRecord record = CcsRecordTest.getTestRecord("Luftfoto OM");
+        CcsRecord record = CcsRecordTest.getTestRecord();
         
         wrapper.ccsUpdate(record);
     }

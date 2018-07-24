@@ -48,6 +48,8 @@ public class CcsRecord {
     public static final String JSON_FIELD_FOR_EMNEORD = "subject_tdsim";
     /** The JSON field name for the georeference.*/
     public static final String JSON_FIELD_FOR_GEOREFERENCE = "dcterms_spatial";
+    /** The JSON field name for the cumulus catalog.*/
+    public static final String JSON_FIELD_FOR_CUMULUS_CATALOG = "cumulus_catalog_ss";
     
     /** The array separator.*/
     public static final String ARRAY_STRING_SEPARATOR = ",";
@@ -94,12 +96,12 @@ public class CcsRecord {
      * @param solrData The JSON solr data object.
      * @param catalogName The name of the catalog
      */
-    public CcsRecord(JSONObject solrData, String catalogName) {
+    public CcsRecord(JSONObject solrData) {
         ArgumentCheck.checkTrue(solrData.has(JSON_FIELD_FOR_RECORD_NAME), 
                 "JSONObject solrData must contain the field '" + JSON_FIELD_FOR_RECORD_NAME + "'");
         
         this.recordName = solrData.getString(JSON_FIELD_FOR_RECORD_NAME);
-        this.catalogName = catalogName;
+        this.catalogName = getJSONFieldValue(solrData, JSON_FIELD_FOR_CUMULUS_CATALOG);
         
         this.titel = getJSONFieldValue(solrData, JSON_FIELD_FOR_TITEL);
         this.person = getJSONFieldValue(solrData, JSON_FIELD_FOR_PERSON);
@@ -123,14 +125,11 @@ public class CcsRecord {
      * @param solrData The Solrj data object.
      * @param catalogName The name of the catalog
      */
-    public CcsRecord(SolrDocument solrData, String catalogName) {
+    public CcsRecord(SolrDocument solrData) {
         ArgumentCheck.checkNotNull(solrData, "SolrDocument solrData");
-        ArgumentCheck.checkNotNullOrEmpty(catalogName, "String catalogName");
-//        ArgumentCheck.checkTrue(solrData.containsKey(JSON_FIELD_FOR_RECORD_NAME), 
-//                "JSONObject solrData must contain the field '" + JSON_FIELD_FOR_RECORD_NAME + "'");
         
         this.recordName = (String) solrData.getFieldValue(JSON_FIELD_FOR_RECORD_NAME);
-        this.catalogName = catalogName;
+        this.catalogName = getSolrFieldValue(solrData, JSON_FIELD_FOR_CUMULUS_CATALOG);
         
         this.titel = getSolrFieldValue(solrData, JSON_FIELD_FOR_TITEL);
         this.person = getSolrFieldValue(solrData, JSON_FIELD_FOR_PERSON);

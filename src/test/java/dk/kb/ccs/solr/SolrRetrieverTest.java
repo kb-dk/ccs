@@ -32,7 +32,7 @@ public class SolrRetrieverTest {
         
         CcsRecord record = solr.getRecordForId("/images/luftfo/2011/maj/luftfoto/object182167");
         Assert.assertNotNull(record);
-        Assert.assertEquals(SolrRetriever.CATALOG_NAME, record.getCatalogName());
+        Assert.assertEquals("Luftfoto OM", record.getCatalogName());
         Assert.assertEquals("A088673_13.tif", record.getRecordName());
         Assert.assertEquals("Jensen, Iris & Børge, Langsted - 1988 -", record.getTitel());
         Assert.assertEquals("Iris og Børge Jensen, gårdejere", record.getPerson());
@@ -41,11 +41,11 @@ public class SolrRetrieverTest {
         Assert.assertEquals("Højrupgyden", record.getVejnavn());
         Assert.assertEquals("11", record.getHusnummer());
         Assert.assertEquals("Langsted", record.getLokalitet());
-        Assert.assertEquals("1234", record.getPostnummer());
+        Assert.assertNull("", record.getPostnummer());
         Assert.assertEquals("Langsted", record.getBy());
-        Assert.assertEquals("sogn", record.getSogn());
-        Assert.assertEquals("1234567890", record.getMatrikelnummer());
-        Assert.assertEquals("noten står her", record.getNote());
+        Assert.assertNull(record.getSogn());
+        Assert.assertEquals("", record.getMatrikelnummer());
+        Assert.assertNull(record.getNote());
         // TODO: Needs to included in the JSON record from SOLR.
         Assert.assertNull(record.getKommentar());
         
@@ -62,6 +62,6 @@ public class SolrRetrieverTest {
         Assert.assertTrue(emneOrd.contains("landbrugsredskaber"));
         
         Assert.assertEquals("55.27572170005405,10.177644300083102", record.getGeoreference());
-    }    
+    }
 }
 

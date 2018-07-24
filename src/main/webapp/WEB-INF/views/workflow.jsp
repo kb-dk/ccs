@@ -11,7 +11,7 @@
 <c:set var = "disable" value = "false"/>
 <head>
     <title>CCS Workflow</title>
-    <meta http-equiv="Refresh" content="5">
+    <meta http-equiv="Refresh" content="30">
 </head>
 <body>
 <div class="jumbotron text-center">
@@ -38,7 +38,7 @@
             <tr>
                 <td>${step.getName()}</td>
                 <td>${step.getStatus()}</td>
-                <td>${step.getTimeForLastRun()}</td>
+                <td>${step.getExecutionTime()}</td>
                 <td>${step.getResultOfLastRun()}</td>
             </tr>
         </c:forEach>
