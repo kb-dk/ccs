@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import dk.kb.ccs.CumulusWrapper;
+import dk.kb.ccs.reporting.Reporter;
 import dk.kb.ccs.solr.CcsRecord;
 import dk.kb.ccs.solr.SolrRetriever;
 import dk.kb.ccs.solr.SolrSearchResult;
@@ -18,9 +19,10 @@ public class CrowdReturnStepTest {
     public void testRun() throws Exception {
         CumulusWrapper cumulusWrapper = Mockito.mock(CumulusWrapper.class);
         SolrRetriever solrRetriever = Mockito.mock(SolrRetriever.class);
+        Reporter reporter = Mockito.mock(Reporter.class);
         CcsRecord record = Mockito.mock(CcsRecord.class);
         
-        CrowdReturnStep step = new CrowdReturnStep(cumulusWrapper, solrRetriever);
+        CrowdReturnStep step = new CrowdReturnStep(cumulusWrapper, solrRetriever, reporter);
         
         String id = UUID.randomUUID().toString();
         SolrSearchResult res = new SolrSearchResult();
@@ -37,6 +39,9 @@ public class CrowdReturnStepTest {
         
         Mockito.verify(cumulusWrapper).ccsUpdate(Mockito.eq(record));
         Mockito.verifyNoMoreInteractions(cumulusWrapper);
+        
+        Mockito.verify(reporter).addResult(Mockito.anyLong());
+        Mockito.verifyNoMoreInteractions(reporter);
         
         Mockito.verifyZeroInteractions(record);
     }

@@ -37,6 +37,7 @@ import dk.kb.cumulus.utils.ArgumentCheck;
  *   solr_url: $ The base URL for the SOLR search
  *   solr_filter_query: $ The filter query for the SOLR search
  *   solr_max_results: $ The maximum number of results of the SOLR searches.
+ *   report_file: $ The file with the reports.
  *   
  *   MORE TO FOLLOW!!!
  */
@@ -67,6 +68,8 @@ public class Configuration {
     protected static final String CONF_SOLR_FILTER_QUERY = "solr_filter_query";
     /** The maximum number of search results of a SOLR search.*/
     protected static final String CONF_SOLR_MAX_RESULTS = "solr_max_results";
+    /** The file with the reports.*/
+    protected static final String CONF_REPORT_FILE = "report_file";
     
     /** Whether Cumulus should have write access. */
     protected static final boolean CUMULUS_WRITE_ACCESS = true;
@@ -81,6 +84,8 @@ public class Configuration {
     protected final String solrFilterQuery;
     /** The maximum number of solr search results.*/
     protected final Integer solrMaxResults;
+    /** The path for the report file.*/
+    protected final String reportFilePath;
 
     /** 
      * Constructor.
@@ -112,12 +117,17 @@ public class Configuration {
                     "Configuration must contain the '" + CONF_SOLR_URL + "' element.");
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_SOLR_FILTER_QUERY), 
                     "Configuration must contain the '" + CONF_SOLR_FILTER_QUERY + "' element.");
+            ArgumentCheck.checkTrue(confMap.containsKey(CONF_SOLR_MAX_RESULTS), 
+                    "Configuration must contain the '" + CONF_SOLR_MAX_RESULTS + "' element.");
+            ArgumentCheck.checkTrue(confMap.containsKey(CONF_REPORT_FILE), 
+                    "Configuration must contain the '" + CONF_REPORT_FILE + "' element.");
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_CUMULUS), 
                     "Configuration must contain the '" + CONF_CUMULUS + "' element.");
             
             this.workflowInterval = Long.valueOf((Integer) confMap.get(CONF_WORKFLOW_INTERVAL));
             this.solrMaxResults = (Integer) confMap.get(CONF_SOLR_MAX_RESULTS);
             this.solrUrl = (String) confMap.get(CONF_SOLR_URL);
+            this.reportFilePath = (String) confMap.get(CONF_REPORT_FILE);
             this.solrFilterQuery = (String) confMap.get(CONF_SOLR_FILTER_QUERY);
             this.cumulusConf = loadCumulusConfiguration((Map<String, Object>) confMap.get(CONF_CUMULUS));
         }
@@ -166,6 +176,11 @@ public class Configuration {
     /** @return The maximum number of solr search results.*/
     public Integer getSolrMaxResults() {
         return solrMaxResults;
+    }
+    
+    /** @return The path for the report file.*/
+    public String getReportFilePath() {
+        return reportFilePath;
     }
     
     /**

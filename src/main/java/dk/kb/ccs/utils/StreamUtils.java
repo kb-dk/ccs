@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import dk.kb.cumulus.utils.ArgumentCheck;
 
@@ -28,5 +30,23 @@ public class StreamUtils {
         }
         
         return res.toString();
+    }
+    
+    /**
+     * Extracts the content of an input stream as lines.
+     * @param in The input stream.
+     * @return A list of all the lines from the inputstream.
+     * @throws IOException If it fails.
+     */
+    public static List<String> extractInputStreamAsLines(InputStream in) throws IOException {
+        ArgumentCheck.checkNotNull(in, "InputStream in");
+        List<String> res = new ArrayList<String>();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+            String line;
+            while((line = br.readLine()) != null) {
+                res.add(line);
+            }
+        }
+        return res;
     }
 }

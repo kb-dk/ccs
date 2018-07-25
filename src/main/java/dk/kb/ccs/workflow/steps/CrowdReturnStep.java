@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.ccs.CumulusWrapper;
+import dk.kb.ccs.reporting.Reporter;
 import dk.kb.ccs.solr.CcsRecord;
 import dk.kb.ccs.solr.SolrRetriever;
 import dk.kb.ccs.solr.SolrSearchResult;
@@ -23,25 +24,28 @@ public class CrowdReturnStep extends WorkflowStep {
     protected final CumulusWrapper cumulusWrapper;
     /** The SOLR retriever for searchin, find and updating data.*/
     protected final SolrRetriever solrRetriever;
+    /** The Reporter for reporting the results of each run.*/
+    protected final Reporter report;
     
     /**
      * Constructor.
-     * @param cumulusWrapper The CumulusRetriever.
+     * @param cumulusWrapper The CumulusRetriever for interacting with Cumulus. 
+     * @param solrRetriever The SolrRetriever for interacting with SOLR.
+     * @param report The reporter for reporting the results of each run.
      */
-    public CrowdReturnStep(CumulusWrapper cumulusWrapper, SolrRetriever solrRetriever) {
+    public CrowdReturnStep(CumulusWrapper cumulusWrapper, SolrRetriever solrRetriever, Reporter report) {
         this.cumulusWrapper = cumulusWrapper;
         this.solrRetriever = solrRetriever;
+        this.report = report;
     }
     
     @Override
     protected void runStep() throws IOException {
         SolrSearchResult res = solrRetriever.findIDsForCrowd();
         for(String id : res.getIds()) {
-            System.err.println(id);
-//            handleCrowdSourcedRecord(id);
+            handleCrowdSourcedRecord(id);
         }
-        System.err.println("Has more results: " + res.getHasMoreResults());
-        // TODO needs some reporting.
+        report.addResult(Long.valueOf(res.getIds().size()));
     }
     
     /**

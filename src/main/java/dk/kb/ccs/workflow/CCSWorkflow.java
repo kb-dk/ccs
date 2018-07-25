@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import dk.kb.ccs.Configuration;
 import dk.kb.ccs.CumulusWrapper;
+import dk.kb.ccs.reporting.Reporter;
 import dk.kb.ccs.solr.SolrRetriever;
 import dk.kb.ccs.workflow.steps.CrowdReturnStep;
 import dk.kb.ccs.workflow.steps.WorkflowStep;
@@ -43,6 +44,9 @@ public class CCSWorkflow extends TimerTask {
     /** The SOLR retriever.*/
     @Autowired
     protected SolrRetriever solrRetriever;
+    /** The Reporter.*/
+    @Autowired
+    protected Reporter reporter;
 
     /** The steps for the workflow.*/
     protected List<WorkflowStep> steps = new ArrayList<WorkflowStep>();
@@ -52,7 +56,7 @@ public class CCSWorkflow extends TimerTask {
      */
     @PostConstruct
     protected void init() {
-        steps.add(new CrowdReturnStep(cumulusWrapper, solrRetriever));
+        steps.add(new CrowdReturnStep(cumulusWrapper, solrRetriever, reporter));
         readyForNextRun();
     }
     
