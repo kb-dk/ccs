@@ -53,6 +53,16 @@
             <version>7.4.0</version>
         </dependency>
         <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>javax.mail-api</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+        <dependency>
             <groupId>com.canto</groupId>
             <artifactId>cumulus</artifactId>
             <version>10</version>
@@ -87,7 +97,7 @@
             </exclusions>
         </dependency>
         <dependency>
-        <groupId>org.mockito</groupId>
+            <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>1.10.19</version>
             <scope>test</scope>
@@ -103,15 +113,6 @@
             <artifactId>h2</artifactId>
             <version>1.4.194</version>
             <scope>test</scope>
-        </dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>javax.mail-api</artifactId>
-            <version>1.6.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
-            <version>1.6.1</version>
         </dependency>
     </dependencies>
 
