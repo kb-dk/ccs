@@ -2,6 +2,7 @@ package dk.kb.ccs;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import org.junit.Assume;
 
@@ -17,5 +18,30 @@ public class TestUtils {
             Assume.assumeNoException(e);
         }
         return conf;
+    }
+    
+    protected static File tmpDir = new File("tmp");
+    
+    public static File getTmpDir() {
+        if(!tmpDir.exists()) {
+            tmpDir.mkdirs();
+        }
+        
+        return tmpDir;
+    }
+    
+    public static void cleanTmpDir() throws IOException {
+        delete(tmpDir);
+    }
+    
+    public static void delete(File f) throws IOException {
+        if(f.listFiles() != null) {
+            for(File file : f.listFiles()) {
+                delete(file);
+            }
+            f.delete();
+        } else {
+            Files.deleteIfExists(f.toPath());
+        }
     }
 }

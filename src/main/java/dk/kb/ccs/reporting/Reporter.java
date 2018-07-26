@@ -60,7 +60,7 @@ public class Reporter {
      */
     public void addResult(Long itemCount) {
         if(itemCount == 0) {
-            log.info("Will not handle the file for a ");
+            log.info("Will not handle non-positive results.");
             return;
         }
         
@@ -86,7 +86,16 @@ public class Reporter {
      * @throws IOException If it fails to read the report file.
      */
     public Map<Long, Long> getEntriesForInterval(Date earliestDate, Date latestDate) throws IOException {
-        if(earliestDate.getTime() > latestDate.getTime()) {
+        Long earliest = 0L;
+        if(earliestDate != null) {
+            earliest = earliestDate.getTime();
+        }
+        long latest = Long.MAX_VALUE;
+        if(latestDate != null) {
+            latest = latestDate.getTime();
+        }
+        
+        if(earliest > latest) {
             log.warn("Cannot retrieve report, when the earliest date is later than the latest date! "
                     + "Returning an empty map.");
             return Collections.emptyMap();
@@ -97,15 +106,6 @@ public class Reporter {
             try(InputStream in = new FileInputStream(reportFile)) {
                 lines = StreamUtils.extractInputStreamAsLines(in);
             }
-        }
-        
-        Long earliest = 0L;
-        if(earliestDate != null) {
-            earliest = earliestDate.getTime();
-        }
-        long latest = Long.MAX_VALUE;
-        if(latestDate != null) {
-            latest = latestDate.getTime();
         }
         
         Map<Long, Long> res = new HashMap<Long, Long>();
@@ -145,7 +145,7 @@ public class Reporter {
                  Long count = Long.decode(split[1]);
                  res.put(date, count);
              } catch (NumberFormatException e) {
-                 log.warn("Cannot handle line '" + line + "'.", e);
+                 log.warn("Cannot handle line '" + line + "'. It will be ignored.", e);
              }
         }
         return res;
