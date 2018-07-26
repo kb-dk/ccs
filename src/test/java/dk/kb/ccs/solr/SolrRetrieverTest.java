@@ -42,13 +42,13 @@ public class SolrRetrieverTest {
         Assert.assertEquals("Højrupgyden", record.getVejnavn());
         Assert.assertEquals("11", record.getHusnummer());
         Assert.assertEquals("Langsted", record.getLokalitet());
-        Assert.assertNull("", record.getPostnummer());
+        Assert.assertNull(record.getPostnummer());
         Assert.assertEquals("Langsted", record.getBy());
         Assert.assertNull(record.getSogn());
         Assert.assertEquals("", record.getMatrikelnummer());
         Assert.assertNull(record.getNote());
         // TODO: Needs to included in the JSON record from SOLR.
-        Assert.assertNull(record.getKommentar());
+        Assert.assertEquals("hest", record.getKommentar());
         
         // Cannot guarantee the order.
         String emneOrd = record.getEmneord();

@@ -43,7 +43,7 @@ public class CcsRecord {
     /** The JSON field name for the note.*/
     public static final String JSON_FIELD_FOR_NOTE = "description_tsim";
     /** The JSON field name for the kommentar.*/
-    public static final String JSON_FIELD_FOR_KOMMENTAR = "TODO";
+    public static final String JSON_FIELD_FOR_KOMMENTAR = "cobject_annotation_comments_tds";
     /** The JSON field name for the emneord.*/
     public static final String JSON_FIELD_FOR_EMNEORD = "subject_tdsim";
     /** The JSON field name for the georeference.*/
