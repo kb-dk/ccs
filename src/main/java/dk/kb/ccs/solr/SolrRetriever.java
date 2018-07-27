@@ -1,9 +1,7 @@
 package dk.kb.ccs.solr;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.solr.client.solrj.SolrClient;
@@ -30,26 +28,10 @@ public class SolrRetriever {
     /** The log.*/
     protected static final Logger log = LoggerFactory.getLogger(SolrRetriever.class);
     
-    /** The used fields.*/
-    protected static final String FIELD_LIST = CcsRecord.JSON_FIELD_FOR_RECORD_NAME 
-            + "," + CcsRecord.JSON_FIELD_FOR_TITEL
-            + "," + CcsRecord.JSON_FIELD_FOR_PERSON 
-            + "," + CcsRecord.JSON_FIELD_FOR_BYGNINGSNAVN 
-            + "," + CcsRecord.JSON_FIELD_FOR_STED 
-            + "," + CcsRecord.JSON_FIELD_FOR_VEJNAVN 
-            + "," + CcsRecord.JSON_FIELD_FOR_HUSNUMMER 
-            + "," + CcsRecord.JSON_FIELD_FOR_LOKALITET 
-            + "," + CcsRecord.JSON_FIELD_FOR_POSTNUMMER 
-            + "," + CcsRecord.JSON_FIELD_FOR_BY 
-            + "," + CcsRecord.JSON_FIELD_FOR_SOGN 
-            + "," + CcsRecord.JSON_FIELD_FOR_MATRIKELNUMMER 
-            + "," + CcsRecord.JSON_FIELD_FOR_NOTE 
-            + "," + CcsRecord.JSON_FIELD_FOR_KOMMENTAR 
-            + "," + CcsRecord.JSON_FIELD_FOR_EMNEORD 
-            + "," + CcsRecord.JSON_FIELD_FOR_GEOREFERENCE;
-    
     /** The username in SOLR for the CumulusCrowdService.*/
     protected static final String CROWD_SERVICE_MODIFY_USER = "ccs";
+    /** The username in SOLR for the crowd-sourced materials.*/
+    protected static final String CROWD_USER = "crowd";
     
     /** The SOLR update action for setting a new value.*/
     protected static final String SOLR_UPDATE_ACTION_SET = "set";
@@ -76,7 +58,7 @@ public class SolrRetriever {
     public SolrSearchResult findIDsForCrowd() throws IOException {
         try (SolrClient client = new HttpSolrClient.Builder(conf.getSolrUrl()).build()) {
             SolrQuery query = new SolrQuery();
-            query.setQuery("-" + FIELD_MODIFY_USER + ":" + CROWD_SERVICE_MODIFY_USER);
+            query.setQuery(FIELD_MODIFY_USER + ":" + CROWD_USER);
             query.addFilterQuery(conf.getSolrFilterQuery());
             query.setFields(FIELD_ID);
             query.setStart(0);

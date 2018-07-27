@@ -1,7 +1,6 @@
 package dk.kb.ccs.workflow.steps;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,11 +54,15 @@ public class CrowdReturnStep extends WorkflowStep {
      * @param id The ID of the crowd sourced SOLR record to retrieve and update.
      * @throws IOException If it fails to find or update the record.
      */
-    protected void handleCrowdSourcedRecord(String id) throws IOException {
+    protected void handleCrowdSourcedRecord(String id) {
         log.info("Handling the crowd sourced material for id '" + id + "'.");
-        CcsRecord record = solrRetriever.getRecordForId(id);
-        cumulusWrapper.ccsUpdate(record);
-        solrRetriever.updateRecord(id);
+        try {
+            CcsRecord record = solrRetriever.getRecordForId(id);
+            cumulusWrapper.ccsUpdate(record);
+            solrRetriever.updateRecord(id);
+        } catch (Exception e) {
+            log.warn("Could not handle the record for id '" + id +"'. Trying to continue.", e);
+        }
     }
     
     @Override

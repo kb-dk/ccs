@@ -64,7 +64,7 @@ public class CumulusWrapper {
     
     /**
      * Updates a Cumulus record with the crowd data from Solr.
-     * @param ccsRecord The CumulusCrowdService record to use for finding and updating a Cumlus record.
+     * @param ccsRecord The CumulusCrowdService record to use for finding and updating a Cumulus record.
      */
     public void ccsUpdate(CcsRecord ccsRecord) {
        CumulusRecord record = findRecord(ccsRecord.getCatalogName(), ccsRecord.getRecordName());

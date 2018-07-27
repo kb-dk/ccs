@@ -54,11 +54,13 @@ public class CcsRecord {
     /** The array separator.*/
     public static final String ARRAY_STRING_SEPARATOR = ",";
     
+    /** The default Cumulus catalog for the records.*/
+    public static final String DEFAULT_CUMULUS_CATALOG = "Luftfoto OM";
     
     /** The name of the record.*/
     protected final String recordName;
     /** The name of the catalog.*/
-    protected final String catalogName;
+    protected String catalogName;
 
     /** The titel, imported as crowd_titel.*/
     protected String titel;
@@ -102,6 +104,9 @@ public class CcsRecord {
         
         this.recordName = solrData.getString(JSON_FIELD_FOR_RECORD_NAME);
         this.catalogName = getJSONFieldValue(solrData, JSON_FIELD_FOR_CUMULUS_CATALOG);
+        if(catalogName == null) {
+            this.catalogName = DEFAULT_CUMULUS_CATALOG;
+        }
         
         this.titel = getJSONFieldValue(solrData, JSON_FIELD_FOR_TITEL);
         this.person = getJSONFieldValue(solrData, JSON_FIELD_FOR_PERSON);
@@ -130,7 +135,10 @@ public class CcsRecord {
         
         this.recordName = (String) solrData.getFieldValue(JSON_FIELD_FOR_RECORD_NAME);
         this.catalogName = getSolrFieldValue(solrData, JSON_FIELD_FOR_CUMULUS_CATALOG);
-        
+        if(catalogName == null) {
+            this.catalogName = DEFAULT_CUMULUS_CATALOG;
+        }
+
         this.titel = getSolrFieldValue(solrData, JSON_FIELD_FOR_TITEL);
         this.person = getSolrFieldValue(solrData, JSON_FIELD_FOR_PERSON);
         this.bygningsnavn = getSolrFieldValue(solrData, JSON_FIELD_FOR_BYGNINGSNAVN);
