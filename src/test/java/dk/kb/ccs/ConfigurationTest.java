@@ -6,6 +6,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import dk.kb.ccs.conf.Configuration;
+
 @SpringBootTest
 public class ConfigurationTest {
     
@@ -17,5 +19,7 @@ public class ConfigurationTest {
         Configuration conf = new Configuration(f.getAbsolutePath());
         
         Assert.assertNotNull(conf);
+        Assert.assertNotNull(conf.getCumulusConf());
+        Assert.assertNotNull(conf.getMailConf());
     }
 }

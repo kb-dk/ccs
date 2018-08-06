@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import dk.kb.ccs.Configuration;
+import dk.kb.ccs.conf.Configuration;
 import dk.kb.ccs.utils.StreamUtils;
 
 /**
@@ -75,6 +75,22 @@ public class Reporter {
                 throw new IllegalStateException("Error occured while reporting the results at '" + now + "'", e);
             } 
         }
+    }
+    
+    /**
+     * Retrieves the summary of the results of the given dates.
+     * @param earliestDate The date.
+     * @param latestDate The latest date.
+     * @return The sum of all the results within the given interval.
+     * @throws IOException If it fails to read the report file.
+     */
+    public Long getSummary(Date earliestDate, Date latestDate) throws IOException {
+        Map<Long, Long> map = getEntriesForInterval(earliestDate, latestDate);
+        Long res = 0L;
+        for(Long l : map.values()) {
+            res += l;
+        }
+        return res;
     }
     
     /**

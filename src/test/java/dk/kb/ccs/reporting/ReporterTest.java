@@ -13,8 +13,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import dk.kb.ccs.Configuration;
 import dk.kb.ccs.TestUtils;
+import dk.kb.ccs.conf.Configuration;
 import dk.kb.ccs.utils.StreamUtils;
 
 @SpringBootTest

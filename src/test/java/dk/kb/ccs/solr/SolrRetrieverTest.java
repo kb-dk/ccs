@@ -4,8 +4,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import dk.kb.ccs.Configuration;
 import dk.kb.ccs.TestUtils;
+import dk.kb.ccs.conf.Configuration;
 
 @SpringBootTest
 public class SolrRetrieverTest {

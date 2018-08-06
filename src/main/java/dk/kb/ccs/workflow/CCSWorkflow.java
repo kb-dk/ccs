@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import dk.kb.ccs.Configuration;
 import dk.kb.ccs.CumulusWrapper;
+import dk.kb.ccs.conf.Configuration;
 import dk.kb.ccs.reporting.Reporter;
 import dk.kb.ccs.solr.SolrRetriever;
 import dk.kb.ccs.workflow.steps.CrowdReturnStep;

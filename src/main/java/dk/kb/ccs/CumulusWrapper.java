@@ -5,6 +5,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import dk.kb.ccs.conf.Configuration;
 import dk.kb.ccs.solr.CcsRecord;
 import dk.kb.cumulus.CumulusRecord;
 import dk.kb.cumulus.CumulusServer;

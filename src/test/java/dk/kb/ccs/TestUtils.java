@@ -6,6 +6,8 @@ import java.nio.file.Files;
 
 import org.junit.Assume;
 
+import dk.kb.ccs.conf.Configuration;
+
 public class TestUtils {
 
     public static Configuration getTestConfiguration() {

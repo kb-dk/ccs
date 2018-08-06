@@ -1,4 +1,4 @@
-package dk.kb.ccs;
+package dk.kb.ccs.conf;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,6 +33,12 @@ import dk.kb.cumulus.utils.ArgumentCheck;
  *       - cat1
  *       - cat2
  *       - ...
+ *   mail:
+ *     to: $LIST OF RECEIVERS
+ *       - receiver1
+ *       - receiver2
+ *       - ...
+ *     from: $FROM
  *   workflow_interval: $ interval for how often to run the workflows
  *   solr_url: $ The base URL for the SOLR search
  *   solr_filter_query: $ The filter query for the SOLR search
@@ -59,6 +65,13 @@ public class Configuration {
     protected static final String CONF_CUMULUS_PASSWORD = "password";
     /** The cumulus catalogs array leaf-element.*/
     protected static final String CONF_CUMULUS_CATALOG = "catalog";
+    
+    /** The mail node element of the configuration.*/
+    protected static final String CONF_MAIL = "mail";
+    /** The mail receivers list (who to send the mail to).*/
+    protected static final String CONF_MAIL_TO = "to";
+    /** The mail sender (who the mail is from).*/
+    protected static final String CONF_MAIL_FROM = "from";
 
     /** The interval for how often the workflow should run (time in millis).*/
     protected static final String CONF_WORKFLOW_INTERVAL = "workflow_interval";
@@ -76,6 +89,8 @@ public class Configuration {
 
     /** The configuration for Cumulus.*/
     protected final CumulusConfiguration cumulusConf;
+    /** The configuration for the mails.*/
+    protected final MailConfiguration mailConf;
     /** The interval for running the workflow.*/
     protected final Long workflowInterval;
     /** The URL for the SOLR.*/
@@ -123,6 +138,9 @@ public class Configuration {
                     "Configuration must contain the '" + CONF_REPORT_FILE + "' element.");
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_CUMULUS), 
                     "Configuration must contain the '" + CONF_CUMULUS + "' element.");
+            ArgumentCheck.checkTrue(confMap.containsKey(CONF_MAIL), 
+                    "Configuration must contain the '" + CONF_MAIL + "' element.");
+            
             
             this.workflowInterval = Long.valueOf((Integer) confMap.get(CONF_WORKFLOW_INTERVAL));
             this.solrMaxResults = (Integer) confMap.get(CONF_SOLR_MAX_RESULTS);
@@ -130,6 +148,7 @@ public class Configuration {
             this.reportFilePath = (String) confMap.get(CONF_REPORT_FILE);
             this.solrFilterQuery = (String) confMap.get(CONF_SOLR_FILTER_QUERY);
             this.cumulusConf = loadCumulusConfiguration((Map<String, Object>) confMap.get(CONF_CUMULUS));
+            this.mailConf = new MailConfiguration((Map<String, Object>) confMap.get(CONF_MAIL));
         }
     }
     
@@ -156,6 +175,11 @@ public class Configuration {
     /** @return The configuration for Cumulus.*/
     public CumulusConfiguration getCumulusConf() {
         return cumulusConf;
+    }
+    
+    /** @return The configuration for the mails.*/
+    public MailConfiguration getMailConf() {
+        return mailConf;
     }
     
     /** @return The interval for running the workflow.*/
