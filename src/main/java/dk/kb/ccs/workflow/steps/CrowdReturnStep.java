@@ -41,10 +41,20 @@ public class CrowdReturnStep extends WorkflowStep {
     @Override
     protected void runStep() throws IOException {
         SolrSearchResult res = solrRetriever.findIDsForCrowd();
+        long countSuccess = 0L;
+        long countFailure = 0L;
         for(String id : res.getIds()) {
-            handleCrowdSourcedRecord(id);
+            try {
+                handleCrowdSourcedRecord(id);
+                countSuccess++;
+            } catch (Exception e) {
+                log.warn("Could not handle the record for id '" + id +"'. Trying to continue.", e);
+                countFailure++;
+            }
+
         }
-        report.addResult(Long.valueOf(res.getIds().size()));
+        report.addResult(countSuccess);
+        setResultOfRun("Handled " + countSuccess + " successfully, and " + countFailure + " failures.");
     }
     
     /**
@@ -54,15 +64,11 @@ public class CrowdReturnStep extends WorkflowStep {
      * @param id The ID of the crowd sourced SOLR record to retrieve and update.
      * @throws IOException If it fails to find or update the record.
      */
-    protected void handleCrowdSourcedRecord(String id) {
+    protected void handleCrowdSourcedRecord(String id) throws IOException {
         log.info("Handling the crowd sourced material for id '" + id + "'.");
-        try {
             CcsRecord record = solrRetriever.getRecordForId(id);
             cumulusWrapper.ccsUpdate(record);
             solrRetriever.updateRecord(id);
-        } catch (Exception e) {
-            log.warn("Could not handle the record for id '" + id +"'. Trying to continue.", e);
-        }
     }
     
     @Override

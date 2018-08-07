@@ -103,14 +103,14 @@ public class Reporter {
         Map<Long, Long> map = getEntriesForInterval(earliestDate, latestDate);
         StringBuilder res = new StringBuilder();
         res.append("Report from the CumulusCrowdService (v. " + PropertyUtils.getVersion() + ").\n");
-        res.append("\nTotal number of entries returned to Cumulus in the interval: " + calculateSummary(map));
+        res.append("\nTotal number of entries returned to Cumulus in the interval: '" + calculateSummary(map) + "'");
         res.append("\nStart date for interval: '" + CalendarUtils.getDateAsString(earliestDate) + "'");
         res.append("\nEnd date for interval: '" + CalendarUtils.getDateAsString(latestDate) + "'");
         
-        res.append("\n\nEntries:\n");
+        res.append("\n\nEntries \t Date\n");
         for(Map.Entry<Long, Long> entry : map.entrySet()) {
             Date d = new Date(entry.getKey());
-            res.append(entry.getValue() + " \t: " + CalendarUtils.getDateTimeAsString(d) + "\n");
+            res.append(entry.getValue() + "\t " + CalendarUtils.getDateTimeAsString(d) + "\n");
         }
         
         return res.toString();

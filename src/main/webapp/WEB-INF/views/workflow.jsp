@@ -19,7 +19,7 @@
     <jsp:param name="page" value="workflow"/>
 </jsp:include>
 <div class="jumbotron text-center">
-    <h1>CCS-Workflow</h1>
+    <h1>Cumulus Crowd Service Workflow</h1>
 </div>
 <div id="main" class="container">
     <p><b>Current state:</b> ${workflow.getState()}</p>
