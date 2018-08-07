@@ -55,12 +55,12 @@ public class StringUtils {
         return listToString(res, separator);
     }
     /**
-     * Method for extracting a JSON array as a single string.
-     * @param array The JSON array.
+     * Method for extracting an array as a single string, where any duplicate elements in the array is removed.
+     * @param array The string array.
      * @param separator The separator between the elements of the array.
-     * @return The string with the elements.
+     * @return The string with the unique elements of the array.
      */
-    public static String extractSolrArray(List<String> array, String separator) {
+    public static String extractUniqueArray(List<String> array, String separator) {
         ArgumentCheck.checkNotNull(separator, "String separator");
         if(array == null || array.size() == 0) {
             return EMPTY_LIST;

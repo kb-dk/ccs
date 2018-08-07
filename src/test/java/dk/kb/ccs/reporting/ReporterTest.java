@@ -89,5 +89,10 @@ public class ReporterTest {
         entries = reporter.getEntriesForInterval(new Date(actualDate+1), new Date());
         Assert.assertEquals(entries.size(), 4);
         
+        long l = reporter.getSummary(null, null);
+        Assert.assertEquals(l, 131626L);
+        
+        String report = reporter.getReport(new Date(0), new Date());
+        Assert.assertTrue(report.contains("131626"));
     }
 }

@@ -199,7 +199,7 @@ public class CcsRecord {
                     return array.get(0);
                 }
                 
-                return StringUtils.extractSolrArray(array, ARRAY_STRING_SEPARATOR);
+                return StringUtils.extractUniqueArray(array, ARRAY_STRING_SEPARATOR);
             }
             return o.toString();
         } else {
