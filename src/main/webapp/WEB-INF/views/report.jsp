@@ -11,18 +11,33 @@
 <c:set var = "disable" value = "false"/>
 <head>
     <title>CCS Report</title>
+  <jsp:include page="includes/head.jsp" />
 </head>
+
 <body>
+<jsp:include page="includes/topBar.jsp">
+    <jsp:param name="page" value="report"/>
+</jsp:include>
 <div class="jumbotron text-center">
     <h1>Cumulus Crowd Service backflow report</h1>
 </div>
 <div id="main" class="container">
-    <p><b>Number of entries returned to Cumulus:</b> ${count}</p>
-    <p><b>Date interval:</b> ${fromDate} <b>to</b> ${toDate}</p>
+  <p><b>Number of entries returned to Cumulus:</b> ${count}</p>
+  <p><b>Date interval:</b> ${fromDateTime} <b>to</b> ${toDateTime}</p>
 
-    <!--form action="${pageContext.request.contextPath}/workflow/run" method="post">
-        <button type="submit" class="btn btn-success" id="runWorkflow" <c:if test="${disable eq true}">disabled</c:if>>Run now</button>
-    </form-->
+  <form action="${pageContext.request.contextPath}/report/run" method="post">
+    <div>
+      <label for="fromDate">Start date</label>
+      <input type="date" id="fromDate" name="fromDate" value="${fromDate}" />
+    </div>
+    <div>
+      <label for="toDate">End date</label>
+      <input type="date" id="toDate" name="toDate" value="${toDate}" />
+    </div>
+  
+    <button type="submit" name="sendMail" value="false" class="btn btn-success">Check date</button>
+    <button type="submit" name="sendMail" value="true" class="btn btn-success">Send mail</button>
+  </form>
 </div>
 </body>
 </html>

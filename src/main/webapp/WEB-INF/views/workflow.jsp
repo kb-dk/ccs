@@ -11,9 +11,13 @@
 <c:set var = "disable" value = "false"/>
 <head>
     <title>CCS Workflow</title>
+    <jsp:include page="includes/head.jsp" />
     <meta http-equiv="Refresh" content="30">
 </head>
 <body>
+<jsp:include page="includes/topBar.jsp">
+    <jsp:param name="page" value="workflow"/>
+</jsp:include>
 <div class="jumbotron text-center">
     <h1>CCS-Workflow</h1>
 </div>

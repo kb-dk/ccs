@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 
@@ -20,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import dk.kb.ccs.conf.Configuration;
+import dk.kb.ccs.utils.CalendarUtils;
+import dk.kb.ccs.utils.PropertyUtils;
 import dk.kb.ccs.utils.StreamUtils;
 
 /**
@@ -86,11 +89,44 @@ public class Reporter {
      */
     public Long getSummary(Date earliestDate, Date latestDate) throws IOException {
         Map<Long, Long> map = getEntriesForInterval(earliestDate, latestDate);
+        return calculateSummary(map);
+    }
+    
+    /**
+     * Creates a report for returned entries to Cumulus for a given interval.
+     * @param earliestDate The earliest date for the interval.
+     * @param latestDate The latest date for the interval.
+     * @return The report for the given interval.
+     * @throws IOException If it fails to read the file for the report.
+     */
+    public String getReport(Date earliestDate, Date latestDate) throws IOException {
+        Map<Long, Long> map = getEntriesForInterval(earliestDate, latestDate);
+        StringBuilder res = new StringBuilder();
+        res.append("Report from the CumulusCrowdService (v. " + PropertyUtils.getVersion() + ").\n");
+        res.append("\nTotal number of entries returned to Cumulus in the interval: " + calculateSummary(map));
+        res.append("\nStart date for interval: '" + CalendarUtils.getDateAsString(earliestDate) + "'");
+        res.append("\nEnd date for interval: '" + CalendarUtils.getDateAsString(latestDate) + "'");
+        
+        res.append("\n\nEntries:\n");
+        for(Map.Entry<Long, Long> entry : map.entrySet()) {
+            Date d = new Date(entry.getKey());
+            res.append(entry.getValue() + " \t: " + CalendarUtils.getDateTimeAsString(d) + "\n");
+        }
+        
+        return res.toString();
+    }
+    
+    /**
+     * Method for calculating the summary of the value elements of a map.
+     * @param map The map to have the summary calculated.
+     * @return The summary of the values of the map.
+     */
+    protected long calculateSummary(Map<Long, Long> map) {
         Long res = 0L;
         for(Long l : map.values()) {
             res += l;
         }
-        return res;
+        return res;        
     }
     
     /**
@@ -101,7 +137,7 @@ public class Reporter {
      * @return The map of entries for the interval.
      * @throws IOException If it fails to read the report file.
      */
-    public Map<Long, Long> getEntriesForInterval(Date earliestDate, Date latestDate) throws IOException {
+    protected Map<Long, Long> getEntriesForInterval(Date earliestDate, Date latestDate) throws IOException {
         Long earliest = 0L;
         if(earliestDate != null) {
             earliest = earliestDate.getTime();
@@ -124,7 +160,7 @@ public class Reporter {
             }
         }
         
-        Map<Long, Long> res = new HashMap<Long, Long>();
+        Map<Long, Long> res = new TreeMap<Long, Long>();
         Map<Long, Long> map = getMap(lines);
         
         for(Map.Entry<Long, Long> entry : map.entrySet()) {

@@ -22,7 +22,7 @@ import dk.kb.ccs.conf.Configuration;
 @Component
 public class SendMail {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(Configuration.class);
+    protected static final Logger log = LoggerFactory.getLogger(SendMail.class);
 
     /** The receivers of the mails.*/
     private List<String> receivers;
@@ -59,7 +59,7 @@ public class SendMail {
      * @param subject The subject of the mail.
      * @param content The content of the mail.
      */
-    public void sendmail(String subject, String content) {
+    public void sendMail(String subject, String content) {
         Properties properties = System.getProperties();
         properties.setProperty("mail.smtp.host", host);
         Session session = Session.getDefaultInstance(properties);
