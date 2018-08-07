@@ -54,6 +54,7 @@ public class StringUtils {
         }
         return listToString(res, separator);
     }
+    
     /**
      * Method for extracting an array as a single string, where any duplicate elements in the array is removed.
      * @param array The string array.
