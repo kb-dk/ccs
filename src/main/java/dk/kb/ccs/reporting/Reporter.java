@@ -6,12 +6,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 
@@ -31,7 +29,10 @@ import dk.kb.ccs.utils.StreamUtils;
  * It wraps a file which contains the entries for each run of the workflow.
  * Everytime the workflow is run, a result entry is made in the report file (unless not results where found).
  * 
- * The file will have a line for each entry. Each line will consist of the date and the count.
+ * The file will have a line for each entry. Each line will consist of the start date, the end date and the count,
+ * all separated by hashes.
+ * E.g.:
+ * startDate##endDate##count
  * 
  * @author jolf
  */
@@ -58,12 +59,13 @@ public class Reporter {
     }
     
     /**
-     * Adds a result to the report, which is at the current timestamp.
+     * Adds a result to the report, which is started at the start-data and ended at the current timestamp.
+     * @param startDate The startDate for the backflow.
      * @param itemCount The number of items handled.
      */
-    public void addResult(Long itemCount) {
-        if(itemCount == 0) {
-            log.info("Will not handle non-positive results.");
+    public void addResult(Date startDate, Long itemCount) {
+        if(itemCount < 0) {
+            log.info("Will not handle negative results.");
             return;
         }
         
@@ -71,7 +73,7 @@ public class Reporter {
         
         synchronized(reportFile) {
             try(OutputStream out = new FileOutputStream(reportFile, true)) {
-                String line = now.getTime() + SEPARATOR + itemCount + "\n";
+                String line = startDate.getTime() + SEPARATOR + now.getTime() + SEPARATOR + itemCount + "\n";
                 out.write(line.getBytes());
             } catch (IOException e) {
                 log.warn("Error occured while reporting the results at '" + now + "'", e);
@@ -88,45 +90,20 @@ public class Reporter {
      * @throws IOException If it fails to read the report file.
      */
     public Long getSummary(Date earliestDate, Date latestDate) throws IOException {
-        Map<Long, Long> map = getEntriesForInterval(earliestDate, latestDate);
-        return calculateSummary(map);
+        List<BackflowEntry> entries = getEntriesForInterval(earliestDate, latestDate);
+        return BackflowEntry.calculateSummary(entries);
     }
     
     /**
      * Creates a report for returned entries to Cumulus for a given interval.
      * @param earliestDate The earliest date for the interval.
      * @param latestDate The latest date for the interval.
-     * @return The report for the given interval.
+     * @return The mail report for the given interval.
      * @throws IOException If it fails to read the file for the report.
      */
-    public String getReport(Date earliestDate, Date latestDate) throws IOException {
-        Map<Long, Long> map = getEntriesForInterval(earliestDate, latestDate);
-        StringBuilder res = new StringBuilder();
-        res.append("Report from the CumulusCrowdService (v. " + PropertyUtils.getVersion() + ").\n");
-        res.append("\nTotal number of entries returned to Cumulus in the interval: '" + calculateSummary(map) + "'");
-        res.append("\nStart date for interval: '" + CalendarUtils.getDateAsString(earliestDate) + "'");
-        res.append("\nEnd date for interval: '" + CalendarUtils.getDateAsString(latestDate) + "'");
-        
-        res.append("\n\nDate \t\t Count\n");
-        for(Map.Entry<Long, Long> entry : map.entrySet()) {
-            Date d = new Date(entry.getKey());
-            res.append(CalendarUtils.getDateTimeAsString(d) + "\t " + entry.getValue() + "\n");
-        }
-        
-        return res.toString();
-    }
-    
-    /**
-     * Method for calculating the summary of the value elements of a map.
-     * @param map The map to have the summary calculated.
-     * @return The summary of the values of the map.
-     */
-    protected long calculateSummary(Map<Long, Long> map) {
-        Long res = 0L;
-        for(Long l : map.values()) {
-            res += l;
-        }
-        return res;        
+    public MailReport getReport(Date earliestDate, Date latestDate) throws IOException {
+        List<BackflowEntry> entries = getEntriesForInterval(earliestDate, latestDate);
+        return new MailReport(earliestDate, latestDate, entries);
     }
     
     /**
@@ -134,10 +111,10 @@ public class Reporter {
      * These entries are returned as a mapping between their dates and their counts.
      * @param earliestDate The lower date limit of the interval.
      * @param latestDate The upper date limit of the interval.
-     * @return The map of entries for the interval.
+     * @return The list of backflow entries for the interval.
      * @throws IOException If it fails to read the report file.
      */
-    protected Map<Long, Long> getEntriesForInterval(Date earliestDate, Date latestDate) throws IOException {
+    protected List<BackflowEntry> getEntriesForInterval(Date earliestDate, Date latestDate) throws IOException {
         Long earliest = 0L;
         if(earliestDate != null) {
             earliest = earliestDate.getTime();
@@ -149,8 +126,8 @@ public class Reporter {
         
         if(earliest > latest) {
             log.warn("Cannot retrieve report, when the earliest date is later than the latest date! "
-                    + "Returning an empty map.");
-            return Collections.emptyMap();
+                    + "Returning an empty list.");
+            return Collections.emptyList();
         }
         
         List<String> lines;
@@ -160,42 +137,38 @@ public class Reporter {
             }
         }
         
-        Map<Long, Long> res = new TreeMap<Long, Long>();
-        Map<Long, Long> map = getMap(lines);
-        
-        for(Map.Entry<Long, Long> entry : map.entrySet()) {
-            if(entry.getKey() > earliest && entry.getKey() < latest) {
-                res.put(entry.getKey(), entry.getValue());
-            }
-        }
-        
-        return res;
+        return getMap(lines, earliest, latest);
     }
     
     /**
      * Retrieves the lines as a map between the date and the count.
      * @param lines The lines from the report file.
+     * @param earliestStart The earliest value for the start date.
+     * @param latestStart The latest value for the start date.
      * @return The mapping between the dates and their count from the lines.
      */
-    protected Map<Long, Long> getMap(List<String> lines) {
-        Map<Long, Long> res = new HashMap<Long, Long>();
+    protected List<BackflowEntry> getMap(List<String> lines, Long earliestStart, Long latestStart) {
+        List<BackflowEntry> res = new ArrayList<BackflowEntry>();
         
         for(String line : lines) {
              String[] split = line.split(SEPARATOR);
-             if(split.length < 2) {
+             if(split.length < 3) {
                  log.warn("The report line '" + line + "' does not contain the separator, '" + SEPARATOR 
                          + "'. It will be ignored.");
                  continue;
              }
-             if(split.length > 2) {
-                 log.warn("The report line '" + line + "' has more than one separator. "
-                         + "Only the first two elements are used.");
+             if(split.length > 3) {
+                 log.warn("The report line '" + line + "' has elements than required. "
+                         + "Only the first three elements are used.");
              }
              
              try {
-                 Long date = Long.decode(split[0]);
-                 Long count = Long.decode(split[1]);
-                 res.put(date, count);
+                 Long startDate = Long.decode(split[0]);
+                 Long endDate = Long.decode(split[1]);
+                 Long count = Long.decode(split[2]);
+                 if(startDate > earliestStart && startDate < latestStart) {
+                     res.add(new BackflowEntry(startDate, endDate, count));
+                 }
              } catch (NumberFormatException e) {
                  log.warn("Cannot handle line '" + line + "'. It will be ignored.", e);
              }

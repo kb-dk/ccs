@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.ccs.CumulusWrapper;
 import dk.kb.ccs.SendMail;
+import dk.kb.ccs.reporting.MailReport;
 import dk.kb.ccs.reporting.Reporter;
 import dk.kb.ccs.solr.CcsRecord;
 import dk.kb.ccs.solr.SolrRetriever;
@@ -43,7 +44,7 @@ public class SendMailStep extends WorkflowStep {
     @Override
     protected void runStep() throws IOException {
         Date earliestDate = new Date(System.currentTimeMillis() - mailInterval);
-        String report = reporter.getReport(earliestDate, new Date());
+        MailReport report = reporter.getReport(earliestDate, new Date());
         String subject = "Cumulus Crowd Service Report";
         mailer.sendMail(subject, report);
         setResultOfRun("Mail sent.");

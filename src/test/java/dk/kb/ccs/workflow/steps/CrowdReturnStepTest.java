@@ -1,5 +1,6 @@
 package dk.kb.ccs.workflow.steps;
 
+import java.util.Date;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -40,7 +41,7 @@ public class CrowdReturnStepTest {
         Mockito.verify(cumulusWrapper).ccsUpdate(Mockito.eq(record));
         Mockito.verifyNoMoreInteractions(cumulusWrapper);
         
-        Mockito.verify(reporter).addResult(Mockito.anyLong());
+        Mockito.verify(reporter).addResult(Mockito.any(Date.class), Mockito.anyLong());
         Mockito.verifyNoMoreInteractions(reporter);
         
         Mockito.verifyZeroInteractions(record);

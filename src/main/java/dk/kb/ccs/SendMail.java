@@ -1,16 +1,22 @@
 package dk.kb.ccs;
 
 import java.net.InetAddress;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import javax.activation.DataHandler;
 import javax.annotation.PostConstruct;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import dk.kb.ccs.conf.Configuration;
+import dk.kb.ccs.reporting.MailReport;
 
 @Component
 public class SendMail {
@@ -59,7 +66,7 @@ public class SendMail {
      * @param subject The subject of the mail.
      * @param content The content of the mail.
      */
-    public void sendMail(String subject, String content) {
+    public void sendMail(String subject, MailReport report) {
         Properties properties = System.getProperties();
         properties.setProperty("mail.smtp.host", host);
         Session session = Session.getDefaultInstance(properties);
@@ -71,7 +78,22 @@ public class SendMail {
                 message.addRecipient(Message.RecipientType.TO, new InternetAddress(receiver));
             }
             message.setSubject(subject);
-            message.setText(content);
+            message.setSentDate(new Date());
+            
+            MimeBodyPart bodyPart = new MimeBodyPart();
+            bodyPart.setText(report.getMailBodyContent());
+            
+            MimeBodyPart attachmentPart = new MimeBodyPart();
+            attachmentPart.setDataHandler(new DataHandler(new ByteArrayDataSource(
+                    report.getAttachment().getBytes(), "text/csv")));
+            attachmentPart.setFileName("ccs.csv");
+            
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(bodyPart);
+            multipart.addBodyPart(attachmentPart);
+            
+            message.setContent(multipart);
+            
             Transport.send(message);
         } catch (MessagingException e) {
             log.error("Encountered an error while trying to send a mail with the subject: " + subject, e);

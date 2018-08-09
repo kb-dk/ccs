@@ -73,6 +73,15 @@ public class CalendarUtils {
         SimpleDateFormat format = new SimpleDateFormat(FORMAT_DATETIME);
         return format.format(d);
     }
+
+    /**
+     * Retrieve the text version of the given datetime.
+     * @param d The date in millis since epoch.
+     * @return The text version of the datetime.
+     */
+    public static String getDateTimeAsString(Long millis) {
+        return getDateTimeAsString(new Date(millis));
+    }
     
     /**
      * Retrieve the text version of the given date.

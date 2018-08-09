@@ -1,6 +1,7 @@
 package dk.kb.ccs.workflow.steps;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,7 @@ public class CrowdReturnStep extends WorkflowStep {
     
     @Override
     protected void runStep() throws IOException {
+        Date startDate = new Date();
         SolrSearchResult res = solrRetriever.findIDsForCrowd();
         long countSuccess = 0L;
         long countFailure = 0L;
@@ -51,9 +53,8 @@ public class CrowdReturnStep extends WorkflowStep {
                 log.warn("Could not handle the record for id '" + id +"'. Trying to continue.", e);
                 countFailure++;
             }
-
         }
-        report.addResult(countSuccess);
+        report.addResult(startDate, countSuccess);
         setResultOfRun("Handled " + countSuccess + " successfully, and " + countFailure + " failures.");
     }
     

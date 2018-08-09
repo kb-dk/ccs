@@ -14,6 +14,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import dk.kb.ccs.SendMail;
 import dk.kb.ccs.conf.Configuration;
+import dk.kb.ccs.reporting.MailReport;
 import dk.kb.ccs.reporting.Reporter;
 import dk.kb.ccs.utils.CalendarUtils;
 
@@ -66,7 +67,7 @@ public class ReportController {
         Date dateTo = toDate == null ? new Date(System.currentTimeMillis() + CalendarUtils.MILLIS_PER_DAY) : 
             CalendarUtils.getDateFromString(toDate);
         if(Boolean.valueOf(sendMail)) {
-            String report = reporter.getReport(dateFrom, dateTo);
+            MailReport report = reporter.getReport(dateFrom, dateTo);
             String subject = "CumulusCrowdService report";
             log.info("Sending the mail with subject: '" + subject + "': \n" + report);
             mailer.sendMail(subject, report);

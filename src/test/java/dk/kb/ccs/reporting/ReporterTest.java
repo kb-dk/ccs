@@ -43,56 +43,47 @@ public class ReporterTest {
         
         Assert.assertFalse(reportFile.exists());
         
-        // Test with a result of 0, no file created
-        reporter.addResult(0L);
+        Date d = new Date();
+        
+        // Test with a negative result, no file created
+        reporter.addResult(d, -1L);
         Assert.assertFalse(reportFile.exists());
         
         // Test with a result of 1000, create file with single line entry. And that it is now (within 1 sec).
-        Long expectedDate = System.currentTimeMillis();
-        reporter.addResult(1000L);
+        reporter.addResult(d, 1000L);
         Assert.assertTrue(reportFile.exists());
         List<String> linesInFile = StreamUtils.extractInputStreamAsLines(new FileInputStream(reportFile));
         Assert.assertEquals(linesInFile.size(), 1);
         Long actualDate = Long.decode(linesInFile.get(0).split(Reporter.SEPARATOR)[0]);
-        Assert.assertTrue(actualDate >= expectedDate);
-        Assert.assertTrue(actualDate <= expectedDate+1000);
+        Assert.assertEquals(actualDate.longValue(), d.getTime());
         
-        // Test with several more results.
-        synchronized(this) {
-            wait(100);
-        }
-        reporter.addResult(123L);
-        synchronized(this) {
-            wait(100);
-        }
-        reporter.addResult(123456L);
-        synchronized(this) {
-            wait(100);
-        }
-        reporter.addResult(6789L);
-        synchronized(this) {
-            wait(100);
-        }
-        reporter.addResult(258L);
+        Date d2 = new Date(d.getTime() + 2);
+        reporter.addResult(d2, 123L);
+        Date d3 = new Date(d.getTime() + 3);
+        reporter.addResult(d3, 123456L);
+        Date d4 = new Date(d.getTime() + 4);
+        reporter.addResult(d4, 6789L);
+        Date d5 = new Date(d.getTime() + 5);
+        reporter.addResult(d5, 258L);
         linesInFile = StreamUtils.extractInputStreamAsLines(new FileInputStream(reportFile));
-        Assert.assertEquals(linesInFile.size(), 5);
+        Assert.assertEquals(5, linesInFile.size());
 
         // Test extracting all entries
-        Map<Long, Long> entries = reporter.getEntriesForInterval(null, null);
+        List<BackflowEntry> entries = reporter.getEntriesForInterval(null, null);
         Assert.assertEquals(5, entries.size());
         
         // Test extracting when given a wrong interval
-        entries = reporter.getEntriesForInterval(new Date(), new Date(System.currentTimeMillis() + 1000));
+        entries = reporter.getEntriesForInterval(new Date(System.currentTimeMillis() + 2000), new Date(System.currentTimeMillis() + 3000));
         Assert.assertEquals(0, entries.size());
 
         // Test extracting when newer than first entry
-        entries = reporter.getEntriesForInterval(new Date(actualDate+1), new Date());
-        Assert.assertEquals(entries.size(), 4);
+        entries = reporter.getEntriesForInterval(new Date(actualDate+1), new Date(System.currentTimeMillis() + 1000));
+        Assert.assertEquals(4, entries.size());
         
         long l = reporter.getSummary(null, null);
-        Assert.assertEquals(l, 131626L);
+        Assert.assertEquals(131626L, l);
         
-        String report = reporter.getReport(new Date(0), new Date());
-        Assert.assertTrue(report.contains("131626"));
+        MailReport report = reporter.getReport(new Date(0), new Date(System.currentTimeMillis() + 1000));
+        Assert.assertTrue(report.getMailBodyContent().contains("131626"));
     }
 }
