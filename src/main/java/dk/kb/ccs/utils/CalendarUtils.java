@@ -19,13 +19,16 @@ public class CalendarUtils {
     public static final Long MILLIS_PER_MONTH = 2592000000L;
     /** The number of milliseconds for a day.*/
     public static final Long MILLIS_PER_DAY = 86400000L;
+    /** The number of milliseconds for an HOUR.*/
+    public static final Long MILLIS_PER_HOUR = 3600000L;
     
     /** The simple format for a date.*/
     public static final String FORMAT_DATE = "yyyy-MM-dd";
     /** The alternative simple format for a date.*/
     public static final String FORMAT_DATE2 = "yyyy/MM/dd";
     /** The format for a date with time.*/
-    public static final String FORMAT_DATETIME = "yyyy-MM-dd HH:mm:ss.SSSZ";
+//    public static final String FORMAT_DATETIME = "yyyy-MM-dd HH:mm:ss.SSSZ";
+    public static final String FORMAT_DATETIME = "yyyy-MM-dd HH:mm:ss";
     
     /**
      * Parses a string as a date.

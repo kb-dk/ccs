@@ -23,7 +23,11 @@ public class WorkflowScheduler {
     
     /** The workflows running in this scheduler.*/
     @Autowired
-    CCSWorkflow workflow;
+    CCSWorkflow ccsWorkflow;
+
+    /** The workflows running in this scheduler.*/
+    @Autowired
+    MailWorkflow mailWorkflow;
     
     /** The timer for running the TimerTasks.*/
     Timer timer;
@@ -37,11 +41,11 @@ public class WorkflowScheduler {
     }
     
     /**
-     * Adds a workflow to the scheduler and schedule it.
-     * @param workflow The workflow
+     * Scedules the workflows.
      */
     @PostConstruct
-    public void scheduleWorkflow() {
-        timer.scheduleAtFixedRate(workflow, timerInterval, timerInterval);
+    public void scheduleWorkflows() {
+        timer.scheduleAtFixedRate(ccsWorkflow, timerInterval, timerInterval);
+        timer.scheduleAtFixedRate(mailWorkflow, timerInterval, timerInterval);
     }
 }

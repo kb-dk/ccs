@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
 
+import dk.kb.ccs.utils.LongUtils;
 import dk.kb.cumulus.config.CumulusConfiguration;
 import dk.kb.cumulus.utils.ArgumentCheck;
 
@@ -39,13 +40,12 @@ import dk.kb.cumulus.utils.ArgumentCheck;
  *       - receiver2
  *       - ...
  *     from: $FROM
- *   workflow_interval: $ interval for how often to run the workflows
+ *   ccs_workflow_interval: $ interval for how often to run the CCS workflows
+ *   mail_workflow_interval: $ interval for how often to run the MAIL workflows
  *   solr_url: $ The base URL for the SOLR search
  *   solr_filter_query: $ The filter query for the SOLR search
  *   solr_max_results: $ The maximum number of results of the SOLR searches.
  *   report_file: $ The file with the reports.
- *   
- *   MORE TO FOLLOW!!!
  */
 @Component
 public class Configuration {
@@ -73,8 +73,10 @@ public class Configuration {
     /** The mail sender (who the mail is from).*/
     protected static final String CONF_MAIL_FROM = "from";
 
-    /** The interval for how often the workflow should run (time in millis).*/
-    protected static final String CONF_WORKFLOW_INTERVAL = "workflow_interval";
+    /** The interval for how often the CCS workflow should run (time in millis).*/
+    protected static final String CONF_CCS_WORKFLOW_INTERVAL = "ccs_workflow_interval";
+    /** The interval for how often the Mail workflow should run (time in millis).*/
+    protected static final String CONF_MAIL_WORKFLOW_INTERVAL = "mail_workflow_interval";
     /** The base URL for the SOLR.*/
     protected static final String CONF_SOLR_URL = "solr_url";
     /** The filter query for the SOLR searches.*/
@@ -91,8 +93,10 @@ public class Configuration {
     protected final CumulusConfiguration cumulusConf;
     /** The configuration for the mails.*/
     protected final MailConfiguration mailConf;
-    /** The interval for running the workflow.*/
-    protected final Long workflowInterval;
+    /** The interval for running the CCS workflow.*/
+    protected final Long ccsWorkflowInterval;
+    /** The interval for running the Mail workflow.*/
+    protected final Long mailWorkflowInterval;
     /** The URL for the SOLR.*/
     protected final String solrUrl;
     /** The filter query for the SOLR search.*/
@@ -126,8 +130,10 @@ public class Configuration {
             
             LinkedHashMap<String, Object> confMap = (LinkedHashMap<String, Object>) rootMap.get(CONF_ROOT);
             
-            ArgumentCheck.checkTrue(confMap.containsKey(CONF_WORKFLOW_INTERVAL), 
-                    "Configuration must contain the '" + CONF_WORKFLOW_INTERVAL + "' element.");
+            ArgumentCheck.checkTrue(confMap.containsKey(CONF_CCS_WORKFLOW_INTERVAL), 
+                    "Configuration must contain the '" + CONF_CCS_WORKFLOW_INTERVAL + "' element.");
+            ArgumentCheck.checkTrue(confMap.containsKey(CONF_MAIL_WORKFLOW_INTERVAL), 
+                    "Configuration must contain the '" + CONF_MAIL_WORKFLOW_INTERVAL + "' element.");
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_SOLR_URL), 
                     "Configuration must contain the '" + CONF_SOLR_URL + "' element.");
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_SOLR_FILTER_QUERY), 
@@ -141,8 +147,8 @@ public class Configuration {
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_MAIL), 
                     "Configuration must contain the '" + CONF_MAIL + "' element.");
             
-            
-            this.workflowInterval = Long.valueOf((Integer) confMap.get(CONF_WORKFLOW_INTERVAL));
+            this.ccsWorkflowInterval = LongUtils.getLong(confMap.get(CONF_CCS_WORKFLOW_INTERVAL));
+            this.mailWorkflowInterval = LongUtils.getLong(confMap.get(CONF_MAIL_WORKFLOW_INTERVAL));
             this.solrMaxResults = (Integer) confMap.get(CONF_SOLR_MAX_RESULTS);
             this.solrUrl = (String) confMap.get(CONF_SOLR_URL);
             this.reportFilePath = (String) confMap.get(CONF_REPORT_FILE);
@@ -183,8 +189,13 @@ public class Configuration {
     }
     
     /** @return The interval for running the workflow.*/
-    public Long getWorkflowInterval() {
-        return workflowInterval;
+    public Long getCcsWorkflowInterval() {
+        return ccsWorkflowInterval;
+    }
+    
+    /** @return The interval for running the Mail workflow.*/
+    public Long getMailWorkflowInterval() {
+        return mailWorkflowInterval;
     }
     
     /** @return The URL for the SOLR.*/

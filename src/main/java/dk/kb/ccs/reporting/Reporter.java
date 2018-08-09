@@ -107,10 +107,10 @@ public class Reporter {
         res.append("\nStart date for interval: '" + CalendarUtils.getDateAsString(earliestDate) + "'");
         res.append("\nEnd date for interval: '" + CalendarUtils.getDateAsString(latestDate) + "'");
         
-        res.append("\n\nEntries \t Date\n");
+        res.append("\n\nDate \t\t Count\n");
         for(Map.Entry<Long, Long> entry : map.entrySet()) {
             Date d = new Date(entry.getKey());
-            res.append(entry.getValue() + "\t " + CalendarUtils.getDateTimeAsString(d) + "\n");
+            res.append(CalendarUtils.getDateTimeAsString(d) + "\t " + entry.getValue() + "\n");
         }
         
         return res.toString();

@@ -12,8 +12,8 @@ public class CalendarUtilsTest {
 
     @Test
     public void testDateTimeAsString() {
-        Assert.assertEquals(CalendarUtils.getDateTimeAsString(new Date(1532690197427L)), "2018-07-27 13:16:37.427+0200");
-        Assert.assertEquals(CalendarUtils.getDateTimeAsString(new Date(0L)), "1970-01-01 01:00:00.000+0100");
+        Assert.assertEquals(CalendarUtils.getDateTimeAsString(new Date(1532690197427L)), "2018-07-27 13:16:37");
+        Assert.assertEquals(CalendarUtils.getDateTimeAsString(new Date(0L)), "1970-01-01 01:00:00");
     }
 
     @Test
@@ -26,12 +26,12 @@ public class CalendarUtilsTest {
     public void testDateFromString() {
         Assert.assertEquals(CalendarUtils.getDateFromString("1970-01-01").getTime(), -3600000L);
         Assert.assertEquals(CalendarUtils.getDateFromString("1970/01/01").getTime(), -3600000L);
-        Assert.assertEquals(CalendarUtils.getDateFromString("1970-01-01 01:00:00.000+0100").getTime(), 0L);
+        Assert.assertEquals(CalendarUtils.getDateFromString("1970-01-01 01:00:00").getTime(), 0L);
         Assert.assertEquals(CalendarUtils.getDateFromString("0").getTime(), 0L);
 
         Assert.assertEquals(CalendarUtils.getDateFromString("2018-07-27").getTime(), 1532642400000L);
         Assert.assertEquals(CalendarUtils.getDateFromString("2018/07/27").getTime(), 1532642400000L);
-        Assert.assertEquals(CalendarUtils.getDateFromString("2018-07-27 13:16:37.427+0200").getTime(), 1532690197427L);
+        Assert.assertEquals(CalendarUtils.getDateFromString("2018-07-27 13:16:37.427+0200").getTime(), 1532690197000L);
         Assert.assertEquals(CalendarUtils.getDateFromString("1532690197427").getTime(), 1532690197427L);
         
         Assert.assertEquals(CalendarUtils.getDateFromString("THIS IS NOT A DATE").getTime(), 0L);

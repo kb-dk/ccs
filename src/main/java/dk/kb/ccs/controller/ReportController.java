@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 
 import dk.kb.ccs.SendMail;
+import dk.kb.ccs.conf.Configuration;
 import dk.kb.ccs.reporting.Reporter;
 import dk.kb.ccs.utils.CalendarUtils;
 
@@ -30,12 +31,15 @@ public class ReportController {
     /** The send mail component.*/
     @Autowired
     protected SendMail mailer;
+    /** The configuration.*/
+    @Autowired
+    protected Configuration conf;
 
     @RequestMapping(value="/report")
     public String getWorkflow(@RequestParam(value="fromDate",required=false) String fromDate, 
             @RequestParam(value="toDate",required=false) String toDate,
             Model model) {
-        Date dateFrom = fromDate == null ? new Date(System.currentTimeMillis() - CalendarUtils.MILLIS_PER_MONTH) : 
+        Date dateFrom = fromDate == null ? new Date(System.currentTimeMillis() - conf.getCcsWorkflowInterval()) : 
             CalendarUtils.getDateFromString(fromDate);
         Date dateTo = toDate == null ? new Date(System.currentTimeMillis() + CalendarUtils.MILLIS_PER_DAY) : 
             CalendarUtils.getDateFromString(toDate);
