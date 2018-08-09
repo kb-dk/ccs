@@ -19,11 +19,10 @@ import dk.kb.ccs.workflow.steps.WorkflowStep;
  * Abstract class for workflows.
  * Deals with the generic part of when the workflow should run.
  * @author jolf
- *
  */
 public abstract class Workflow extends TimerTask {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(Workflow.class);
+    protected final Logger log = LoggerFactory.getLogger(Workflow.class);
 
     /** The date for the next run of the workflow.*/
     protected Date nextRun;
@@ -51,17 +50,17 @@ public abstract class Workflow extends TimerTask {
     /**
      * Initializes the steps for the workflow.
      */
-    abstract protected void initSteps();
+    abstract void initSteps();
     
     /**
      * @return The interval for the workflow.
      */
-    abstract protected Long getInterval();
+    abstract Long getInterval();
     
     /**
      * @return The name of the workflow
      */
-    abstract public String getName();
+    abstract String getName();
     
     @Override
     public void run() {
@@ -124,7 +123,8 @@ public abstract class Workflow extends TimerTask {
      * Sets this workflow ready for the next run by setting the date for the next run and the state to 'waiting'.
      */
     protected void readyForNextRun() {
-        Long time = System.currentTimeMillis() + getInterval() - (System.currentTimeMillis() % CalendarUtils.MILLIS_PER_HOUR); 
+        Long time = System.currentTimeMillis() + getInterval() - 
+                (System.currentTimeMillis() % CalendarUtils.MILLIS_PER_HOUR); 
         nextRun = new Date(time);
         state = WorkflowState.WAITING;        
     }

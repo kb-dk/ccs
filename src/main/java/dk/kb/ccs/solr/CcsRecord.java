@@ -96,7 +96,6 @@ public class CcsRecord {
     /**
      * Constructor. For JSON results.
      * @param solrData The JSON solr data object.
-     * @param catalogName The name of the catalog
      */
     public CcsRecord(JSONObject solrData) {
         ArgumentCheck.checkTrue(solrData.has(JSON_FIELD_FOR_RECORD_NAME), 
@@ -128,7 +127,6 @@ public class CcsRecord {
     /**
      * Constructor. For Solr results.
      * @param solrData The Solrj data object.
-     * @param catalogName The name of the catalog
      */
     public CcsRecord(SolrDocument solrData) {
         ArgumentCheck.checkNotNull(solrData, "SolrDocument solrData");

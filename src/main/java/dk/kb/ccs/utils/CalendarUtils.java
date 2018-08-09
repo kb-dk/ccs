@@ -76,7 +76,7 @@ public class CalendarUtils {
 
     /**
      * Retrieve the text version of the given datetime.
-     * @param d The date in millis since epoch.
+     * @param millis The date in millis since epoch.
      * @return The text version of the datetime.
      */
     public static String getDateTimeAsString(Long millis) {

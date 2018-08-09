@@ -6,13 +6,9 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.kb.ccs.CumulusWrapper;
 import dk.kb.ccs.SendMail;
 import dk.kb.ccs.reporting.MailReport;
 import dk.kb.ccs.reporting.Reporter;
-import dk.kb.ccs.solr.CcsRecord;
-import dk.kb.ccs.solr.SolrRetriever;
-import dk.kb.ccs.solr.SolrSearchResult;
 
 /**
  * Step for retrieving changed records from COP, extracts the crowd-sourced fields from  
@@ -20,7 +16,7 @@ import dk.kb.ccs.solr.SolrSearchResult;
  */
 public class SendMailStep extends WorkflowStep {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(SendMailStep.class);
+    protected static Logger log = LoggerFactory.getLogger(SendMailStep.class);
     
     /** The Reporter for reporting the results of each run.*/
     protected final Reporter reporter;
@@ -31,9 +27,9 @@ public class SendMailStep extends WorkflowStep {
     
     /**
      * Constructor.
-     * @param cumulusWrapper The CumulusRetriever for interacting with Cumulus. 
-     * @param solrRetriever The SolrRetriever for interacting with SOLR.
-     * @param report The reporter for reporting the results of each run.
+     * @param report The reporter for the backflow reports.
+     * @param mailer The mailer for sending the mails.
+     * @param mailInterval The interval for the report.
      */
     public SendMailStep(Reporter report, SendMail mailer, Long mailInterval) {
         this.reporter = report;
@@ -46,7 +42,7 @@ public class SendMailStep extends WorkflowStep {
         Date earliestDate = new Date(System.currentTimeMillis() - mailInterval);
         MailReport report = reporter.getReport(earliestDate, new Date());
         String subject = "Cumulus Crowd Service Report";
-        mailer.sendMail(subject, report);
+        mailer.sendReport(subject, report);
         setResultOfRun("Mail sent.");
     }
     

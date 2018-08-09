@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class WorkflowStep {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(WorkflowStep.class);
+    protected final Logger log = LoggerFactory.getLogger(WorkflowStep.class);
     
     /** The status of the workflow.*/
     protected String status;

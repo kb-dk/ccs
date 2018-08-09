@@ -42,7 +42,7 @@ public class CumulusWrapper {
     
     /**
      * Method for retrieving the Cumulus server.
-     * @return
+     * @return The cumulus server.
      */
     public CumulusServer getCumulusServer() {
         return server;
@@ -68,23 +68,23 @@ public class CumulusWrapper {
      * @param ccsRecord The CumulusCrowdService record to use for finding and updating a Cumulus record.
      */
     public void ccsUpdate(CcsRecord ccsRecord) {
-       CumulusRecord record = findRecord(ccsRecord.getCatalogName(), ccsRecord.getRecordName());
-       
-       setFieldValueInRecord(record, "Crowd_Titel", ccsRecord.getTitel());
-       setFieldValueInRecord(record, "Crowd_Person", ccsRecord.getPerson());
-       setFieldValueInRecord(record, "Crowd_Bygningsnavn", ccsRecord.getBygningsnavn());
-       setFieldValueInRecord(record, "Crowd_Sted", ccsRecord.getSted());
-       setFieldValueInRecord(record, "Crowd_Vejnavn", ccsRecord.getVejnavn());
-       setFieldValueInRecord(record, "Crowd_Husnummer", ccsRecord.getHusnummer());
-       setFieldValueInRecord(record, "Crowd_Lokalitet", ccsRecord.getLokalitet());
-       setFieldValueInRecord(record, "Crowd_Postnummer", ccsRecord.getPostnummer());
-       setFieldValueInRecord(record, "Crowd_By", ccsRecord.getBy());
-       setFieldValueInRecord(record, "Crowd_Sogn", ccsRecord.getSogn());
-       setFieldValueInRecord(record, "Crowd_Matrikelnummer", ccsRecord.getMatrikelnummer());
-       setFieldValueInRecord(record, "Crowd_Note", ccsRecord.getNote());
-       setFieldValueInRecord(record, "Crowd_Kommentar", ccsRecord.getKommentar());
-       setFieldValueInRecord(record, "Crowd_Emneord", ccsRecord.getEmneord());
-       setFieldValueInRecord(record, "Crowd_Georeference", ccsRecord.getGeoreference());
+        CumulusRecord record = findRecord(ccsRecord.getCatalogName(), ccsRecord.getRecordName());
+
+        setFieldValueInRecord(record, "Crowd_Titel", ccsRecord.getTitel());
+        setFieldValueInRecord(record, "Crowd_Person", ccsRecord.getPerson());
+        setFieldValueInRecord(record, "Crowd_Bygningsnavn", ccsRecord.getBygningsnavn());
+        setFieldValueInRecord(record, "Crowd_Sted", ccsRecord.getSted());
+        setFieldValueInRecord(record, "Crowd_Vejnavn", ccsRecord.getVejnavn());
+        setFieldValueInRecord(record, "Crowd_Husnummer", ccsRecord.getHusnummer());
+        setFieldValueInRecord(record, "Crowd_Lokalitet", ccsRecord.getLokalitet());
+        setFieldValueInRecord(record, "Crowd_Postnummer", ccsRecord.getPostnummer());
+        setFieldValueInRecord(record, "Crowd_By", ccsRecord.getBy());
+        setFieldValueInRecord(record, "Crowd_Sogn", ccsRecord.getSogn());
+        setFieldValueInRecord(record, "Crowd_Matrikelnummer", ccsRecord.getMatrikelnummer());
+        setFieldValueInRecord(record, "Crowd_Note", ccsRecord.getNote());
+        setFieldValueInRecord(record, "Crowd_Kommentar", ccsRecord.getKommentar());
+        setFieldValueInRecord(record, "Crowd_Emneord", ccsRecord.getEmneord());
+        setFieldValueInRecord(record, "Crowd_Georeference", ccsRecord.getGeoreference());
     }
     
     /**

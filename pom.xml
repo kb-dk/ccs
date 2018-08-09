@@ -8,9 +8,9 @@
     <artifactId>ccs</artifactId>
     <version>1.0.0-RC1</version>
     <packaging>war</packaging>
-    
-	<name>CCS</name>
-	<description>Cumulus Crowd Service</description>
+
+    <name>CCS</name>
+    <description>Cumulus Crowd Service</description>
 	
     <parent>
         <groupId>org.springframework.boot</groupId>

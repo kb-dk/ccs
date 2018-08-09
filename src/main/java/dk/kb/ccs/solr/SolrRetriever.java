@@ -26,7 +26,7 @@ import dk.kb.ccs.conf.Configuration;
 @Component
 public class SolrRetriever {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(SolrRetriever.class);
+    protected final Logger log = LoggerFactory.getLogger(SolrRetriever.class);
     
     /** The username in SOLR for the CumulusCrowdService.*/
     protected static final String CROWD_SERVICE_MODIFY_USER = "ccs";
@@ -83,8 +83,8 @@ public class SolrRetriever {
     /**
      * Retrieves the SOLR record for a given ID, and then returns it as a CcsRecord.
      * @param id The ID for the solr record to find.
-     * @return The CcsRecord for the 
-     * @throws IOException
+     * @return The CcsRecord for the SOLR record with the given ID.
+     * @throws IOException If it fails to retrieve data from SOLR.
      */
     public CcsRecord getRecordForId(String id) throws IOException {
         try (SolrClient client = new HttpSolrClient.Builder(conf.getSolrUrl()).build()) {

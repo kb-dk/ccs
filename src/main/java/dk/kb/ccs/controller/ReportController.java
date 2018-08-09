@@ -24,7 +24,7 @@ import dk.kb.ccs.utils.CalendarUtils;
 @Controller
 public class ReportController {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(ReportController.class);
+    protected final Logger log = LoggerFactory.getLogger(ReportController.class);
 
     /** The workflow.*/
     @Autowired
@@ -36,6 +36,15 @@ public class ReportController {
     @Autowired
     protected Configuration conf;
 
+    /**
+     * The controller method for the report view.
+     * Delivers the count of entries return to Cumulus by the backflow workflow within the given interval,
+     * and the interval dates.
+     * @param fromDate The begining of the interval.
+     * @param toDate The end of the interval.
+     * @param model The model.
+     * @return The report path.
+     */
     @RequestMapping(value="/report")
     public String getWorkflow(@RequestParam(value="fromDate",required=false) String fromDate, 
             @RequestParam(value="toDate",required=false) String toDate,
@@ -57,6 +66,15 @@ public class ReportController {
         return "report";
     }
     
+    /**
+     * Run method for sending the mail, or redirecting back to the view with the report interval.
+     * @param fromDate The lower date interval limit.
+     * @param toDate The upper date interval limit.
+     * @param sendMail Whether or not to send the mail, or just redirect with to the report view.
+     * @param model The model.
+     * @return The redirect back to the report view, with the parameters for the interval.
+     * @throws IOException If it fails to send the mail, or retrieve the report for the mail.
+     */
     @RequestMapping(value="/report/run")
     public RedirectView sendMail(@RequestParam(value="fromDate",required=false) String fromDate, 
             @RequestParam(value="toDate",required=false) String toDate,
@@ -70,7 +88,7 @@ public class ReportController {
             MailReport report = reporter.getReport(dateFrom, dateTo);
             String subject = "CumulusCrowdService report";
             log.info("Sending the mail with subject: '" + subject + "': \n" + report);
-            mailer.sendMail(subject, report);
+            mailer.sendReport(subject, report);
         }
         return new RedirectView("../report?fromDate=" + dateFrom.getTime() + "&toDate=" + dateTo.getTime(), true);
     }

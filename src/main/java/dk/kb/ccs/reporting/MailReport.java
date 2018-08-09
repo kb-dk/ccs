@@ -26,8 +26,8 @@ public class MailReport {
      */
     public MailReport(Date earliestDate, Date latestDate, List<BackflowEntry> entries) {
         this.entries = entries;
-        this.earliestDate = earliestDate;
-        this.latestDate = latestDate;
+        this.earliestDate = new Date(earliestDate.getTime());
+        this.latestDate = new Date(latestDate.getTime());
     }
     
     /**

@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -19,8 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import dk.kb.ccs.conf.Configuration;
-import dk.kb.ccs.utils.CalendarUtils;
-import dk.kb.ccs.utils.PropertyUtils;
 import dk.kb.ccs.utils.StreamUtils;
 
 /**
@@ -39,11 +38,14 @@ import dk.kb.ccs.utils.StreamUtils;
 @Component
 public class Reporter {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(Reporter.class);
+    protected final Logger log = LoggerFactory.getLogger(Reporter.class);
     
     /** The separator character set for the report file.*/
     protected static final String SEPARATOR = "##";
     
+    /**
+     * The configuration.
+     */
     @Autowired
     Configuration conf;
     
@@ -74,7 +76,7 @@ public class Reporter {
         synchronized(reportFile) {
             try(OutputStream out = new FileOutputStream(reportFile, true)) {
                 String line = startDate.getTime() + SEPARATOR + now.getTime() + SEPARATOR + itemCount + "\n";
-                out.write(line.getBytes());
+                out.write(line.getBytes(StandardCharsets.UTF_8));
             } catch (IOException e) {
                 log.warn("Error occured while reporting the results at '" + now + "'", e);
                 throw new IllegalStateException("Error occured while reporting the results at '" + now + "'", e);
@@ -151,27 +153,27 @@ public class Reporter {
         List<BackflowEntry> res = new ArrayList<BackflowEntry>();
         
         for(String line : lines) {
-             String[] split = line.split(SEPARATOR);
-             if(split.length < 3) {
-                 log.warn("The report line '" + line + "' does not contain the separator, '" + SEPARATOR 
-                         + "'. It will be ignored.");
-                 continue;
-             }
-             if(split.length > 3) {
-                 log.warn("The report line '" + line + "' has elements than required. "
-                         + "Only the first three elements are used.");
-             }
-             
-             try {
-                 Long startDate = Long.decode(split[0]);
-                 Long endDate = Long.decode(split[1]);
-                 Long count = Long.decode(split[2]);
-                 if(startDate > earliestStart && startDate < latestStart) {
-                     res.add(new BackflowEntry(startDate, endDate, count));
-                 }
-             } catch (NumberFormatException e) {
-                 log.warn("Cannot handle line '" + line + "'. It will be ignored.", e);
-             }
+            String[] split = line.split(SEPARATOR);
+            if(split.length < 3) {
+                log.warn("The report line '" + line + "' does not contain the separator, '" + SEPARATOR 
+                        + "'. It will be ignored.");
+                continue;
+            }
+            if(split.length > 3) {
+                log.warn("The report line '" + line + "' has elements than required. "
+                        + "Only the first three elements are used.");
+            }
+
+            try {
+                Long startDate = Long.decode(split[0]);
+                Long endDate = Long.decode(split[1]);
+                Long count = Long.decode(split[2]);
+                if(startDate > earliestStart && startDate < latestStart) {
+                    res.add(new BackflowEntry(startDate, endDate, count));
+                }
+            } catch (NumberFormatException e) {
+                log.warn("Cannot handle line '" + line + "'. It will be ignored.", e);
+            }
         }
         return res;
     }

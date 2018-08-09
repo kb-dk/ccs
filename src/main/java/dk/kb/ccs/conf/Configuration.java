@@ -50,7 +50,7 @@ import dk.kb.cumulus.utils.ArgumentCheck;
 @Component
 public class Configuration {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(Configuration.class);
+    protected final Logger log = LoggerFactory.getLogger(Configuration.class);
 
     /** The root element of the YAML configuration.*/
     protected static final String CONF_ROOT = "ccs";
@@ -122,7 +122,8 @@ public class Configuration {
         try (InputStream in = new FileInputStream(confFile)) {
             Object o = new Yaml().load(in);
             if(!(o instanceof LinkedHashMap)) {
-                throw new IllegalArgumentException("The file '" + confFile + "' does not contain a valid AIM configuration.");
+                throw new IllegalArgumentException("The file '" + confFile 
+                        + "' does not contain a valid CCS configuration.");
             }
             LinkedHashMap<String, Object> rootMap = (LinkedHashMap<String, Object>) o;
             ArgumentCheck.checkTrue(rootMap.containsKey(CONF_ROOT), 

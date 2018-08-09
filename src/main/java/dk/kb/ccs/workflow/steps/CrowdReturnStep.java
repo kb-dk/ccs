@@ -18,7 +18,7 @@ import dk.kb.ccs.solr.SolrSearchResult;
  */
 public class CrowdReturnStep extends WorkflowStep {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(CrowdReturnStep.class);
+    protected final Logger log = LoggerFactory.getLogger(CrowdReturnStep.class);
     
     /** The Cumulus retriever, for finding the Cumulus records for the COP records.*/
     protected final CumulusWrapper cumulusWrapper;
@@ -67,9 +67,9 @@ public class CrowdReturnStep extends WorkflowStep {
      */
     protected void handleCrowdSourcedRecord(String id) throws IOException {
         log.info("Handling the crowd sourced material for id '" + id + "'.");
-            CcsRecord record = solrRetriever.getRecordForId(id);
-            cumulusWrapper.ccsUpdate(record);
-            solrRetriever.updateRecord(id);
+        CcsRecord record = solrRetriever.getRecordForId(id);
+        cumulusWrapper.ccsUpdate(record);
+        solrRetriever.updateRecord(id);
     }
     
     @Override

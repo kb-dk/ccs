@@ -1,25 +1,26 @@
 package dk.kb.ccs.workflow;
 
-import java.util.Timer;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.ServletContextEvent;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.ContextLoaderListener;
 
 /**
  * The workflow scheduler for scheduling the workflows.
  * 
- * Basically the timer checks whether to run any of workflows once every second.
+ * Wraps a ScheduledExecutorService, which checks whether to run any of workflows once every second.
  * It is the workflows themselves, who checks their conditions and performs their tasks if the conditions are met.
  */
 @Service
-public class WorkflowScheduler {
-    /** The timer should run as a daemon.*/
-    protected final static Boolean isDaemon = true;
-    
+public class WorkflowScheduler extends ContextLoaderListener {
     /** The interval for the timer, so it .*/
-    protected final static long timerInterval = 1000L;
+    protected static final long TIMER_INTERVAL = 1000L;
     
     /** The workflows running in this scheduler.*/
     @Autowired
@@ -30,14 +31,14 @@ public class WorkflowScheduler {
     MailWorkflow mailWorkflow;
     
     /** The timer for running the TimerTasks.*/
-    Timer timer;
+    ScheduledExecutorService executorService;
     
-    /**
-     * Constructor.
-     * Instantiates the timer as a daemon.
-     */
-    public WorkflowScheduler() {
-        this.timer = new Timer(isDaemon);
+    @Override
+    public void contextDestroyed(ServletContextEvent event) {
+        super.contextDestroyed(event);
+        ccsWorkflow.cancel();
+        mailWorkflow.cancel();
+        executorService.shutdownNow();
     }
     
     /**
@@ -45,7 +46,9 @@ public class WorkflowScheduler {
      */
     @PostConstruct
     public void scheduleWorkflows() {
-        timer.scheduleAtFixedRate(ccsWorkflow, timerInterval, timerInterval);
-        timer.scheduleAtFixedRate(mailWorkflow, timerInterval, timerInterval);
+        executorService = Executors.newSingleThreadScheduledExecutor();
+        
+        executorService.scheduleAtFixedRate(ccsWorkflow, TIMER_INTERVAL, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
+        executorService.scheduleAtFixedRate(mailWorkflow, TIMER_INTERVAL, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
     }
 }

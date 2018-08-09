@@ -23,6 +23,11 @@ public class WorkflowController {
     @Autowired
     protected MailWorkflow mailWorkflow;
 
+    /**
+     * View for the workflows.
+     * @param model The model.
+     * @return The path to the workflow.
+     */
     @RequestMapping("/workflow")
     public String getWorkflow(Model model) {
         model.addAttribute("ccsWorkflow", ccsWorkflow);
@@ -31,10 +36,17 @@ public class WorkflowController {
         return "workflow";
     }
     
+    /**
+     * The run method for the workflows.
+     * Matches the name of the workflow, and starts the given workflow.
+     * Will default run the CCS workflow, if the name doesn't match.
+     * @param name The name of the workflow to run.
+     * @return The redirect back to the workflow view, when the given workflow is started.
+     */
     @RequestMapping("/workflow/run")
     public RedirectView runWorkflow(@RequestParam(value="name",required=false) String name) {
-        if(name.equals("mailWorkflow")) {
-            mailWorkflow.startManually();            
+        if(name != null && name.equals("mailWorkflow")) {
+            mailWorkflow.startManually();
         } else {
             ccsWorkflow.startManually();
         }

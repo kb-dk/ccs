@@ -10,6 +10,10 @@ import java.util.List;
 
 import dk.kb.cumulus.utils.ArgumentCheck;
 
+/**
+ * Utility class for the methods regarding streams.
+ * @author jolf
+ */
 public class StreamUtils {
 
     /**

@@ -1,6 +1,7 @@
 package dk.kb.ccs;
 
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -26,10 +27,13 @@ import org.springframework.stereotype.Component;
 import dk.kb.ccs.conf.Configuration;
 import dk.kb.ccs.reporting.MailReport;
 
+/**
+ * The component for sending mails.
+ */
 @Component
 public class SendMail {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(SendMail.class);
+    protected final Logger log = LoggerFactory.getLogger(SendMail.class);
 
     /** The receivers of the mails.*/
     private List<String> receivers;
@@ -64,9 +68,9 @@ public class SendMail {
      * Method for sending a mail.
      * It will be sent to all the receivers in the configuration, and it will be from the sender in the configuration.
      * @param subject The subject of the mail.
-     * @param content The content of the mail.
+     * @param report The report to put into the mail.
      */
-    public void sendMail(String subject, MailReport report) {
+    public void sendReport(String subject, MailReport report) {
         Properties properties = System.getProperties();
         properties.setProperty("mail.smtp.host", host);
         Session session = Session.getDefaultInstance(properties);
@@ -85,7 +89,7 @@ public class SendMail {
             
             MimeBodyPart attachmentPart = new MimeBodyPart();
             attachmentPart.setDataHandler(new DataHandler(new ByteArrayDataSource(
-                    report.getAttachment().getBytes(), "text/csv")));
+                    report.getAttachment().getBytes(StandardCharsets.UTF_8), "text/csv")));
             attachmentPart.setFileName("ccs.csv");
             
             Multipart multipart = new MimeMultipart();
@@ -100,4 +104,3 @@ public class SendMail {
         }
     }
 }
-

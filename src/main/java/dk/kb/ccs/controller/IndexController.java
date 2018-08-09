@@ -10,6 +10,10 @@ import org.springframework.web.servlet.view.RedirectView;
 @Controller
 public class IndexController {
 
+    /**
+     * Index controller, for redirecting towards the workflow site.
+     * @return The redirect toward the workflow site.
+     */
     @RequestMapping("/")
     public RedirectView getIndex() {
         return new RedirectView("workflow",true);
