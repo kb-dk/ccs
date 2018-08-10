@@ -1,7 +1,10 @@
 package dk.kb.ccs;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +18,8 @@ import dk.kb.cumulus.CumulusServer;
  */
 @Component
 public class CumulusWrapper {
+    /** The log.*/
+    protected final Logger log = LoggerFactory.getLogger(CumulusWrapper.class);
     
     /** The Cumulus server.*/
     protected CumulusServer server;
@@ -29,6 +34,18 @@ public class CumulusWrapper {
     @PostConstruct
     protected void initialize() {
         setCumulusServer(new CumulusServer(conf.getCumulusConf()));
+    }
+    
+    /**
+     * Close the Cumulus client.
+     */
+    @PreDestroy
+    protected void tearDown() {
+        try {
+            server.close();
+        } catch (Exception e) {
+            log.error("Issue while closing the Cumulus client.", e);
+        }
     }
     
     /**

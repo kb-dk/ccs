@@ -5,11 +5,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.ServletContextEvent;
+import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.ContextLoaderListener;
 
 /**
  * The workflow scheduler for scheduling the workflows.
@@ -18,7 +17,7 @@ import org.springframework.web.context.ContextLoaderListener;
  * It is the workflows themselves, who checks their conditions and performs their tasks if the conditions are met.
  */
 @Service
-public class WorkflowScheduler extends ContextLoaderListener {
+public class WorkflowScheduler {
     /** The interval for the timer, so it .*/
     protected static final long TIMER_INTERVAL = 1000L;
     
@@ -33,9 +32,11 @@ public class WorkflowScheduler extends ContextLoaderListener {
     /** The timer for running the TimerTasks.*/
     ScheduledExecutorService executorService;
     
-    @Override
-    public void contextDestroyed(ServletContextEvent event) {
-        super.contextDestroyed(event);
+    /**
+     * Method for shutting down this service.
+     */
+    @PreDestroy
+    public void shutDown() {
         ccsWorkflow.cancel();
         mailWorkflow.cancel();
         executorService.shutdownNow();
