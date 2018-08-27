@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import dk.kb.ccs.conf.Configuration;
+import dk.kb.ccs.utils.FileUtils;
 import dk.kb.ccs.utils.StreamUtils;
 
 /**
@@ -57,7 +58,7 @@ public class Reporter {
      */
     @PostConstruct
     protected void initialize() {
-        reportFile = new File(conf.getReportFilePath());
+        reportFile = FileUtils.getWritableFile(conf.getReportFilePath());
     }
     
     /**
