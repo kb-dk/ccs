@@ -50,6 +50,7 @@ public class CrowdReturnStep extends WorkflowStep {
                 handleCrowdSourcedRecord(id);
                 countSuccess++;
             } catch (Exception e) {
+                solrRetriever.updateRecord(id, SolrRetriever.SOLR_MODIFY_USER_FAILURE);
                 log.warn("Could not handle the record for id '" + id +"'. Trying to continue.", e);
                 countFailure++;
             }
@@ -69,7 +70,7 @@ public class CrowdReturnStep extends WorkflowStep {
         log.info("Handling the crowd sourced material for id '" + id + "'.");
         CcsRecord record = solrRetriever.getRecordForId(id);
         cumulusWrapper.ccsUpdate(record);
-        solrRetriever.updateRecord(id);
+        solrRetriever.updateRecord(id, SolrRetriever.SOLR_MODIFY_USER_CROWD_SERVICE);
     }
     
     @Override

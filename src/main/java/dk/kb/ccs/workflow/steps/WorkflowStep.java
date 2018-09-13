@@ -87,6 +87,9 @@ public abstract class WorkflowStep {
             setStatus("Running");
             setResultOfRun("Running...");
             runStep();
+            synchronized(this) {
+                wait(60000);
+            }
             setStatus("Finished");
         } catch (Throwable e) {
             log.error("Failure when running step: " + getName(), e);

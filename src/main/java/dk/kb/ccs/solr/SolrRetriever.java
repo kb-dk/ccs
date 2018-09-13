@@ -29,9 +29,11 @@ public class SolrRetriever {
     protected final Logger log = LoggerFactory.getLogger(SolrRetriever.class);
     
     /** The username in SOLR for the CumulusCrowdService.*/
-    protected static final String CROWD_SERVICE_MODIFY_USER = "ccs";
+    public static final String SOLR_MODIFY_USER_CROWD_SERVICE = "ccs";
+    /** The username in SOLR for the failure case.*/
+    public static final String SOLR_MODIFY_USER_FAILURE = "failure";
     /** The username in SOLR for the crowd-sourced materials.*/
-    protected static final String CROWD_USER = "crowd";
+    public static final String SOLR_MODIFY_USER_CROWD = "crowd";
     
     /** The SOLR update action for setting a new value.*/
     protected static final String SOLR_UPDATE_ACTION_SET = "set";
@@ -58,7 +60,7 @@ public class SolrRetriever {
     public SolrSearchResult findIDsForCrowd() throws IOException {
         try (SolrClient client = new HttpSolrClient.Builder(conf.getSolrUrl()).build()) {
             SolrQuery query = new SolrQuery();
-            query.setQuery(FIELD_MODIFY_USER + ":" + CROWD_USER);
+            query.setQuery(FIELD_MODIFY_USER + ":" + SOLR_MODIFY_USER_CROWD);
             query.addFilterQuery(conf.getSolrFilterQuery());
             query.setFields(FIELD_ID);
             query.setStart(0);
@@ -114,16 +116,17 @@ public class SolrRetriever {
     /**
      * Updates the SOLR record with the given id, so it has this service as the 'last_modified_by' user. 
      * @param id The ID of the SOLR record to update.
+     * @param updateUser The solr modify user to update the record.
      * @throws IOException If it fails to update.
      */
-    public void updateRecord(String id) throws IOException {
+    public void updateRecord(String id, String updateUser) throws IOException {
         try (SolrClient client = new HttpSolrClient.Builder(conf.getSolrUrl()).build()) {
             SolrInputDocument updateDoc = new SolrInputDocument();
             
             updateDoc.addField(FIELD_ID, id);
             
             Map<String,Object> fieldModifier = new HashMap<>(1);
-            fieldModifier.put(SOLR_UPDATE_ACTION_SET, CROWD_SERVICE_MODIFY_USER);
+            fieldModifier.put(SOLR_UPDATE_ACTION_SET, updateUser);
             updateDoc.addField(FIELD_MODIFY_USER, fieldModifier);
             
             UpdateRequest request = new UpdateRequest();
