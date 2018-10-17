@@ -53,15 +53,7 @@ public class SendMail {
     protected void initialize() {
         this.receivers = conf.getMailConf().getTo();
         this.sender = conf.getMailConf().getFrom();
-        String myHost = null;
-        try {
-            myHost = InetAddress.getLocalHost().getHostName();
-        } catch (Exception e) {
-            log.warn("Issue occured while trying to retrieve the name of the local host.", e);
-            myHost = "localhost";
-        }
-        
-        this.host = myHost;
+        this.host = "localhost";
     }
 
     /**
