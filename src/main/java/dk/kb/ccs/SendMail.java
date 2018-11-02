@@ -1,6 +1,5 @@
 package dk.kb.ccs;
 
-import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
