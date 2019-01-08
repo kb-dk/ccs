@@ -1,6 +1,7 @@
 package dk.kb.ccs.solr;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -22,6 +23,7 @@ public class SolrRetrieverTest {
         System.err.println(ids.hasMoreResults);
     }
 
+    @Ignore
     @Test
     public void testGetRecordForId() throws Exception {
         Configuration conf = TestUtils.getTestConfiguration();

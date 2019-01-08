@@ -46,6 +46,8 @@ public class SolrRetriever {
     protected static final String FIELD_MODIFY_USER = "cobject_last_modified_by_ssi";
     /** The field name for the id.*/
     protected static final String FIELD_ID = "id";
+    /** The field name for being ready to CCS. It is a boolean field.*/
+    public static final String FIELD_CCS_READY = "ccs_ready_bsi";
     
     /** The configuration. Auto-wired.*/
     @Autowired
@@ -60,7 +62,7 @@ public class SolrRetriever {
     public SolrSearchResult findIDsForCrowd() throws IOException {
         try (SolrClient client = new HttpSolrClient.Builder(conf.getSolrUrl()).build()) {
             SolrQuery query = new SolrQuery();
-            query.setQuery(FIELD_MODIFY_USER + ":" + SOLR_MODIFY_USER_CROWD);
+            query.setQuery(FIELD_CCS_READY + ":" + Boolean.TRUE.toString());
             query.addFilterQuery(conf.getSolrFilterQuery());
             query.setFields(FIELD_ID);
             query.setStart(0);
@@ -128,6 +130,7 @@ public class SolrRetriever {
             Map<String,Object> fieldModifier = new HashMap<>(1);
             fieldModifier.put(SOLR_UPDATE_ACTION_SET, updateUser);
             updateDoc.addField(FIELD_MODIFY_USER, fieldModifier);
+            updateDoc.addField(FIELD_CCS_READY, Boolean.FALSE.toString());
             
             UpdateRequest request = new UpdateRequest();
             request.add(updateDoc);
