@@ -127,10 +127,12 @@ public class SolrRetriever {
             
             updateDoc.addField(FIELD_ID, id);
             
-            Map<String,Object> fieldModifier = new HashMap<>(1);
-            fieldModifier.put(SOLR_UPDATE_ACTION_SET, updateUser);
-            updateDoc.addField(FIELD_MODIFY_USER, fieldModifier);
-            updateDoc.addField(FIELD_CCS_READY, Boolean.FALSE.toString());
+            Map<String,Object> userFieldModifier = new HashMap<>(1);
+            userFieldModifier.put(SOLR_UPDATE_ACTION_SET, updateUser);
+            updateDoc.addField(FIELD_MODIFY_USER, userFieldModifier);
+            Map<String,Object> readyFieldModifier = new HashMap<>(1);
+            readyFieldModifier.put(SOLR_UPDATE_ACTION_SET, Boolean.FALSE.toString());
+            updateDoc.addField(FIELD_CCS_READY, readyFieldModifier);
             
             UpdateRequest request = new UpdateRequest();
             request.add(updateDoc);
