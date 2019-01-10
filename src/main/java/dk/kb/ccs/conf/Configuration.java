@@ -1,4 +1,4 @@
-package dk.kb.ccs;
+package dk.kb.ccs.conf;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
 
+import dk.kb.ccs.utils.LongUtils;
 import dk.kb.cumulus.config.CumulusConfiguration;
 import dk.kb.cumulus.utils.ArgumentCheck;
 
@@ -33,17 +34,23 @@ import dk.kb.cumulus.utils.ArgumentCheck;
  *       - cat1
  *       - cat2
  *       - ...
- *   workflow_interval: $ interval for how often to run the workflows
+ *   mail:
+ *     to: $LIST OF RECEIVERS
+ *       - receiver1
+ *       - receiver2
+ *       - ...
+ *     from: $FROM
+ *   ccs_workflow_interval: $ interval for how often to run the CCS workflows
+ *   mail_workflow_interval: $ interval for how often to run the MAIL workflows
  *   solr_url: $ The base URL for the SOLR search
  *   solr_filter_query: $ The filter query for the SOLR search
  *   solr_max_results: $ The maximum number of results of the SOLR searches.
- *   
- *   MORE TO FOLLOW!!!
+ *   report_file: $ The file with the reports.
  */
 @Component
 public class Configuration {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(Configuration.class);
+    protected final Logger log = LoggerFactory.getLogger(Configuration.class);
 
     /** The root element of the YAML configuration.*/
     protected static final String CONF_ROOT = "ccs";
@@ -58,29 +65,46 @@ public class Configuration {
     protected static final String CONF_CUMULUS_PASSWORD = "password";
     /** The cumulus catalogs array leaf-element.*/
     protected static final String CONF_CUMULUS_CATALOG = "catalog";
+    
+    /** The mail node element of the configuration.*/
+    protected static final String CONF_MAIL = "mail";
+    /** The mail receivers list (who to send the mail to).*/
+    protected static final String CONF_MAIL_TO = "to";
+    /** The mail sender (who the mail is from).*/
+    protected static final String CONF_MAIL_FROM = "from";
 
-    /** The interval for how often the workflow should run (time in millis).*/
-    protected static final String CONF_WORKFLOW_INTERVAL = "workflow_interval";
+    /** The interval for how often the CCS workflow should run (time in millis).*/
+    protected static final String CONF_CCS_WORKFLOW_INTERVAL = "ccs_workflow_interval";
+    /** The interval for how often the Mail workflow should run (time in millis).*/
+    protected static final String CONF_MAIL_WORKFLOW_INTERVAL = "mail_workflow_interval";
     /** The base URL for the SOLR.*/
     protected static final String CONF_SOLR_URL = "solr_url";
     /** The filter query for the SOLR searches.*/
     protected static final String CONF_SOLR_FILTER_QUERY = "solr_filter_query";
     /** The maximum number of search results of a SOLR search.*/
     protected static final String CONF_SOLR_MAX_RESULTS = "solr_max_results";
+    /** The file with the reports.*/
+    protected static final String CONF_REPORT_FILE = "report_file";
     
     /** Whether Cumulus should have write access. */
     protected static final boolean CUMULUS_WRITE_ACCESS = true;
 
     /** The configuration for Cumulus.*/
     protected final CumulusConfiguration cumulusConf;
-    /** The interval for running the workflow.*/
-    protected final Long workflowInterval;
+    /** The configuration for the mails.*/
+    protected final MailConfiguration mailConf;
+    /** The interval for running the CCS workflow.*/
+    protected final Long ccsWorkflowInterval;
+    /** The interval for running the Mail workflow.*/
+    protected final Long mailWorkflowInterval;
     /** The URL for the SOLR.*/
     protected final String solrUrl;
     /** The filter query for the SOLR search.*/
     protected final String solrFilterQuery;
     /** The maximum number of solr search results.*/
     protected final Integer solrMaxResults;
+    /** The path for the report file.*/
+    protected final String reportFilePath;
 
     /** 
      * Constructor.
@@ -98,7 +122,8 @@ public class Configuration {
         try (InputStream in = new FileInputStream(confFile)) {
             Object o = new Yaml().load(in);
             if(!(o instanceof LinkedHashMap)) {
-                throw new IllegalArgumentException("The file '" + confFile + "' does not contain a valid AIM configuration.");
+                throw new IllegalArgumentException("The file '" + confFile 
+                        + "' does not contain a valid CCS configuration.");
             }
             LinkedHashMap<String, Object> rootMap = (LinkedHashMap<String, Object>) o;
             ArgumentCheck.checkTrue(rootMap.containsKey(CONF_ROOT), 
@@ -106,20 +131,31 @@ public class Configuration {
             
             LinkedHashMap<String, Object> confMap = (LinkedHashMap<String, Object>) rootMap.get(CONF_ROOT);
             
-            ArgumentCheck.checkTrue(confMap.containsKey(CONF_WORKFLOW_INTERVAL), 
-                    "Configuration must contain the '" + CONF_WORKFLOW_INTERVAL + "' element.");
+            ArgumentCheck.checkTrue(confMap.containsKey(CONF_CCS_WORKFLOW_INTERVAL), 
+                    "Configuration must contain the '" + CONF_CCS_WORKFLOW_INTERVAL + "' element.");
+            ArgumentCheck.checkTrue(confMap.containsKey(CONF_MAIL_WORKFLOW_INTERVAL), 
+                    "Configuration must contain the '" + CONF_MAIL_WORKFLOW_INTERVAL + "' element.");
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_SOLR_URL), 
                     "Configuration must contain the '" + CONF_SOLR_URL + "' element.");
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_SOLR_FILTER_QUERY), 
                     "Configuration must contain the '" + CONF_SOLR_FILTER_QUERY + "' element.");
+            ArgumentCheck.checkTrue(confMap.containsKey(CONF_SOLR_MAX_RESULTS), 
+                    "Configuration must contain the '" + CONF_SOLR_MAX_RESULTS + "' element.");
+            ArgumentCheck.checkTrue(confMap.containsKey(CONF_REPORT_FILE), 
+                    "Configuration must contain the '" + CONF_REPORT_FILE + "' element.");
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_CUMULUS), 
                     "Configuration must contain the '" + CONF_CUMULUS + "' element.");
+            ArgumentCheck.checkTrue(confMap.containsKey(CONF_MAIL), 
+                    "Configuration must contain the '" + CONF_MAIL + "' element.");
             
-            this.workflowInterval = Long.valueOf((Integer) confMap.get(CONF_WORKFLOW_INTERVAL));
+            this.ccsWorkflowInterval = LongUtils.getLong(confMap.get(CONF_CCS_WORKFLOW_INTERVAL));
+            this.mailWorkflowInterval = LongUtils.getLong(confMap.get(CONF_MAIL_WORKFLOW_INTERVAL));
             this.solrMaxResults = (Integer) confMap.get(CONF_SOLR_MAX_RESULTS);
             this.solrUrl = (String) confMap.get(CONF_SOLR_URL);
+            this.reportFilePath = (String) confMap.get(CONF_REPORT_FILE);
             this.solrFilterQuery = (String) confMap.get(CONF_SOLR_FILTER_QUERY);
             this.cumulusConf = loadCumulusConfiguration((Map<String, Object>) confMap.get(CONF_CUMULUS));
+            this.mailConf = new MailConfiguration((Map<String, Object>) confMap.get(CONF_MAIL));
         }
     }
     
@@ -148,9 +184,19 @@ public class Configuration {
         return cumulusConf;
     }
     
+    /** @return The configuration for the mails.*/
+    public MailConfiguration getMailConf() {
+        return mailConf;
+    }
+    
     /** @return The interval for running the workflow.*/
-    public Long getWorkflowInterval() {
-        return workflowInterval;
+    public Long getCcsWorkflowInterval() {
+        return ccsWorkflowInterval;
+    }
+    
+    /** @return The interval for running the Mail workflow.*/
+    public Long getMailWorkflowInterval() {
+        return mailWorkflowInterval;
     }
     
     /** @return The URL for the SOLR.*/
@@ -166,6 +212,11 @@ public class Configuration {
     /** @return The maximum number of solr search results.*/
     public Integer getSolrMaxResults() {
         return solrMaxResults;
+    }
+    
+    /** @return The path for the report file.*/
+    public String getReportFilePath() {
+        return reportFilePath;
     }
     
     /**

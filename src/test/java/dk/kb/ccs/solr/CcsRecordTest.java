@@ -2,7 +2,6 @@ package dk.kb.ccs.solr;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.UUID;
 
 import org.json.JSONObject;
 import org.junit.Assert;

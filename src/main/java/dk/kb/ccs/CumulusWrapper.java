@@ -1,10 +1,14 @@
 package dk.kb.ccs;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import dk.kb.ccs.conf.Configuration;
 import dk.kb.ccs.solr.CcsRecord;
 import dk.kb.cumulus.CumulusRecord;
 import dk.kb.cumulus.CumulusServer;
@@ -14,6 +18,8 @@ import dk.kb.cumulus.CumulusServer;
  */
 @Component
 public class CumulusWrapper {
+    /** The log.*/
+    protected final Logger log = LoggerFactory.getLogger(CumulusWrapper.class);
     
     /** The Cumulus server.*/
     protected CumulusServer server;
@@ -31,6 +37,18 @@ public class CumulusWrapper {
     }
     
     /**
+     * Close the Cumulus client.
+     */
+    @PreDestroy
+    protected void tearDown() {
+        try {
+            server.close();
+        } catch (Exception e) {
+            log.error("Issue while closing the Cumulus client.", e);
+        }
+    }
+    
+    /**
      * Sets the server. 
      * Made as separate function to make testing possible.
      * @param server The Cumulus server.
@@ -41,7 +59,7 @@ public class CumulusWrapper {
     
     /**
      * Method for retrieving the Cumulus server.
-     * @return
+     * @return The cumulus server.
      */
     public CumulusServer getCumulusServer() {
         return server;
@@ -64,26 +82,26 @@ public class CumulusWrapper {
     
     /**
      * Updates a Cumulus record with the crowd data from Solr.
-     * @param ccsRecord The CumulusCrowdService record to use for finding and updating a Cumlus record.
+     * @param ccsRecord The CumulusCrowdService record to use for finding and updating a Cumulus record.
      */
     public void ccsUpdate(CcsRecord ccsRecord) {
-       CumulusRecord record = findRecord(ccsRecord.getCatalogName(), ccsRecord.getRecordName());
-       
-       setFieldValueInRecord(record, "Crowd_Titel", ccsRecord.getTitel());
-       setFieldValueInRecord(record, "Crowd_Person", ccsRecord.getPerson());
-       setFieldValueInRecord(record, "Crowd_Bygningsnavn", ccsRecord.getBygningsnavn());
-       setFieldValueInRecord(record, "Crowd_Sted", ccsRecord.getSted());
-       setFieldValueInRecord(record, "Crowd_Vejnavn", ccsRecord.getVejnavn());
-       setFieldValueInRecord(record, "Crowd_Husnummer", ccsRecord.getHusnummer());
-       setFieldValueInRecord(record, "Crowd_Lokalitet", ccsRecord.getLokalitet());
-       setFieldValueInRecord(record, "Crowd_Postnummer", ccsRecord.getPostnummer());
-       setFieldValueInRecord(record, "Crowd_By", ccsRecord.getBy());
-       setFieldValueInRecord(record, "Crowd_Sogn", ccsRecord.getSogn());
-       setFieldValueInRecord(record, "Crowd_Matrikelnummer", ccsRecord.getMatrikelnummer());
-       setFieldValueInRecord(record, "Crowd_Note", ccsRecord.getNote());
-       setFieldValueInRecord(record, "Crowd_Kommentar", ccsRecord.getKommentar());
-       setFieldValueInRecord(record, "Crowd_Emneord", ccsRecord.getEmneord());
-       setFieldValueInRecord(record, "Crowd_Georeference", ccsRecord.getGeoreference());
+        CumulusRecord record = findRecord(ccsRecord.getCatalogName(), ccsRecord.getRecordName());
+
+        setFieldValueInRecord(record, "Crowd_Titel", ccsRecord.getTitel());
+        setFieldValueInRecord(record, "Crowd_Person", ccsRecord.getPerson());
+        setFieldValueInRecord(record, "Crowd_Bygningsnavn", ccsRecord.getBygningsnavn());
+        setFieldValueInRecord(record, "Crowd_Sted", ccsRecord.getSted());
+        setFieldValueInRecord(record, "Crowd_Vejnavn", ccsRecord.getVejnavn());
+        setFieldValueInRecord(record, "Crowd_Husnummer", ccsRecord.getHusnummer());
+        setFieldValueInRecord(record, "Crowd_Lokalitet", ccsRecord.getLokalitet());
+        setFieldValueInRecord(record, "Crowd_Postnummer", ccsRecord.getPostnummer());
+        setFieldValueInRecord(record, "Crowd_By", ccsRecord.getBy());
+        setFieldValueInRecord(record, "Crowd_Sogn", ccsRecord.getSogn());
+        setFieldValueInRecord(record, "Crowd_Matrikelnummer", ccsRecord.getMatrikelnummer());
+        setFieldValueInRecord(record, "Crowd_Note", ccsRecord.getNote());
+        setFieldValueInRecord(record, "Crowd_Kommentar", ccsRecord.getKommentar());
+        setFieldValueInRecord(record, "Crowd_Emneord", ccsRecord.getEmneord());
+        setFieldValueInRecord(record, "Crowd_Georeference", ccsRecord.getGeoreference());
     }
     
     /**

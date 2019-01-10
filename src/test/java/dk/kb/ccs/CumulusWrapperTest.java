@@ -9,6 +9,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import dk.kb.ccs.conf.Configuration;
 import dk.kb.ccs.solr.CcsRecord;
 import dk.kb.ccs.solr.CcsRecordTest;
 

@@ -43,7 +43,7 @@ public class CcsRecord {
     /** The JSON field name for the note.*/
     public static final String JSON_FIELD_FOR_NOTE = "description_tsim";
     /** The JSON field name for the kommentar.*/
-    public static final String JSON_FIELD_FOR_KOMMENTAR = "TODO";
+    public static final String JSON_FIELD_FOR_KOMMENTAR = "cobject_annotation_comments_tds";
     /** The JSON field name for the emneord.*/
     public static final String JSON_FIELD_FOR_EMNEORD = "subject_tdsim";
     /** The JSON field name for the georeference.*/
@@ -54,11 +54,13 @@ public class CcsRecord {
     /** The array separator.*/
     public static final String ARRAY_STRING_SEPARATOR = ",";
     
+    /** The default Cumulus catalog for the records.*/
+    public static final String DEFAULT_CUMULUS_CATALOG = "Luftfoto OM";
     
     /** The name of the record.*/
     protected final String recordName;
     /** The name of the catalog.*/
-    protected final String catalogName;
+    protected String catalogName;
 
     /** The titel, imported as crowd_titel.*/
     protected String titel;
@@ -94,7 +96,6 @@ public class CcsRecord {
     /**
      * Constructor. For JSON results.
      * @param solrData The JSON solr data object.
-     * @param catalogName The name of the catalog
      */
     public CcsRecord(JSONObject solrData) {
         ArgumentCheck.checkTrue(solrData.has(JSON_FIELD_FOR_RECORD_NAME), 
@@ -102,6 +103,9 @@ public class CcsRecord {
         
         this.recordName = solrData.getString(JSON_FIELD_FOR_RECORD_NAME);
         this.catalogName = getJSONFieldValue(solrData, JSON_FIELD_FOR_CUMULUS_CATALOG);
+        if(catalogName == null) {
+            this.catalogName = DEFAULT_CUMULUS_CATALOG;
+        }
         
         this.titel = getJSONFieldValue(solrData, JSON_FIELD_FOR_TITEL);
         this.person = getJSONFieldValue(solrData, JSON_FIELD_FOR_PERSON);
@@ -123,14 +127,16 @@ public class CcsRecord {
     /**
      * Constructor. For Solr results.
      * @param solrData The Solrj data object.
-     * @param catalogName The name of the catalog
      */
     public CcsRecord(SolrDocument solrData) {
         ArgumentCheck.checkNotNull(solrData, "SolrDocument solrData");
         
         this.recordName = (String) solrData.getFieldValue(JSON_FIELD_FOR_RECORD_NAME);
         this.catalogName = getSolrFieldValue(solrData, JSON_FIELD_FOR_CUMULUS_CATALOG);
-        
+        if(catalogName == null) {
+            this.catalogName = DEFAULT_CUMULUS_CATALOG;
+        }
+
         this.titel = getSolrFieldValue(solrData, JSON_FIELD_FOR_TITEL);
         this.person = getSolrFieldValue(solrData, JSON_FIELD_FOR_PERSON);
         this.bygningsnavn = getSolrFieldValue(solrData, JSON_FIELD_FOR_BYGNINGSNAVN);
@@ -191,7 +197,7 @@ public class CcsRecord {
                     return array.get(0);
                 }
                 
-                return StringUtils.extractSolrArray(array, ARRAY_STRING_SEPARATOR);
+                return StringUtils.extractUniqueArray(array, ARRAY_STRING_SEPARATOR);
             }
             return o.toString();
         } else {

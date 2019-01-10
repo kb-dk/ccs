@@ -1,13 +1,12 @@
 package dk.kb.ccs.solr;
 
-import java.util.List;
-
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import dk.kb.ccs.Configuration;
 import dk.kb.ccs.TestUtils;
+import dk.kb.ccs.conf.Configuration;
 
 @SpringBootTest
 public class SolrRetrieverTest {
@@ -24,6 +23,7 @@ public class SolrRetrieverTest {
         System.err.println(ids.hasMoreResults);
     }
 
+    @Ignore
     @Test
     public void testGetRecordForId() throws Exception {
         Configuration conf = TestUtils.getTestConfiguration();
@@ -42,13 +42,13 @@ public class SolrRetrieverTest {
         Assert.assertEquals("Højrupgyden", record.getVejnavn());
         Assert.assertEquals("11", record.getHusnummer());
         Assert.assertEquals("Langsted", record.getLokalitet());
-        Assert.assertNull("", record.getPostnummer());
+        Assert.assertNull(record.getPostnummer());
         Assert.assertEquals("Langsted", record.getBy());
         Assert.assertNull(record.getSogn());
         Assert.assertEquals("", record.getMatrikelnummer());
         Assert.assertNull(record.getNote());
         // TODO: Needs to included in the JSON record from SOLR.
-        Assert.assertNull(record.getKommentar());
+//        Assert.assertEquals("hest", record.getKommentar());
         
         // Cannot guarantee the order.
         String emneOrd = record.getEmneord();

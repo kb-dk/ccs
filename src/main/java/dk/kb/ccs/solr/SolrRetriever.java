@@ -1,9 +1,7 @@
 package dk.kb.ccs.solr;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.solr.client.solrj.SolrClient;
@@ -19,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import dk.kb.ccs.Configuration;
+import dk.kb.ccs.conf.Configuration;
 
 /**
  * Class for handling the interactions with SOLR.
@@ -28,28 +26,14 @@ import dk.kb.ccs.Configuration;
 @Component
 public class SolrRetriever {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(SolrRetriever.class);
-    
-    /** The used fields.*/
-    protected static final String FIELD_LIST = CcsRecord.JSON_FIELD_FOR_RECORD_NAME 
-            + "," + CcsRecord.JSON_FIELD_FOR_TITEL
-            + "," + CcsRecord.JSON_FIELD_FOR_PERSON 
-            + "," + CcsRecord.JSON_FIELD_FOR_BYGNINGSNAVN 
-            + "," + CcsRecord.JSON_FIELD_FOR_STED 
-            + "," + CcsRecord.JSON_FIELD_FOR_VEJNAVN 
-            + "," + CcsRecord.JSON_FIELD_FOR_HUSNUMMER 
-            + "," + CcsRecord.JSON_FIELD_FOR_LOKALITET 
-            + "," + CcsRecord.JSON_FIELD_FOR_POSTNUMMER 
-            + "," + CcsRecord.JSON_FIELD_FOR_BY 
-            + "," + CcsRecord.JSON_FIELD_FOR_SOGN 
-            + "," + CcsRecord.JSON_FIELD_FOR_MATRIKELNUMMER 
-            + "," + CcsRecord.JSON_FIELD_FOR_NOTE 
-            + "," + CcsRecord.JSON_FIELD_FOR_KOMMENTAR 
-            + "," + CcsRecord.JSON_FIELD_FOR_EMNEORD 
-            + "," + CcsRecord.JSON_FIELD_FOR_GEOREFERENCE;
+    protected final Logger log = LoggerFactory.getLogger(SolrRetriever.class);
     
     /** The username in SOLR for the CumulusCrowdService.*/
-    protected static final String CROWD_SERVICE_MODIFY_USER = "ccs";
+    public static final String SOLR_MODIFY_USER_CROWD_SERVICE = "ccs";
+    /** The username in SOLR for the failure case.*/
+    public static final String SOLR_MODIFY_USER_FAILURE = "failure";
+    /** The username in SOLR for the crowd-sourced materials.*/
+    public static final String SOLR_MODIFY_USER_CROWD = "crowd";
     
     /** The SOLR update action for setting a new value.*/
     protected static final String SOLR_UPDATE_ACTION_SET = "set";
@@ -62,6 +46,8 @@ public class SolrRetriever {
     protected static final String FIELD_MODIFY_USER = "cobject_last_modified_by_ssi";
     /** The field name for the id.*/
     protected static final String FIELD_ID = "id";
+    /** The field name for being ready to CCS. It is a boolean field.*/
+    public static final String FIELD_CCS_READY = "ccs_ready_bsi";
     
     /** The configuration. Auto-wired.*/
     @Autowired
@@ -76,7 +62,7 @@ public class SolrRetriever {
     public SolrSearchResult findIDsForCrowd() throws IOException {
         try (SolrClient client = new HttpSolrClient.Builder(conf.getSolrUrl()).build()) {
             SolrQuery query = new SolrQuery();
-            query.setQuery("-" + FIELD_MODIFY_USER + ":" + CROWD_SERVICE_MODIFY_USER);
+            query.setQuery(FIELD_CCS_READY + ":" + Boolean.TRUE.toString());
             query.addFilterQuery(conf.getSolrFilterQuery());
             query.setFields(FIELD_ID);
             query.setStart(0);
@@ -101,8 +87,8 @@ public class SolrRetriever {
     /**
      * Retrieves the SOLR record for a given ID, and then returns it as a CcsRecord.
      * @param id The ID for the solr record to find.
-     * @return The CcsRecord for the 
-     * @throws IOException
+     * @return The CcsRecord for the SOLR record with the given ID.
+     * @throws IOException If it fails to retrieve data from SOLR.
      */
     public CcsRecord getRecordForId(String id) throws IOException {
         try (SolrClient client = new HttpSolrClient.Builder(conf.getSolrUrl()).build()) {
@@ -132,17 +118,21 @@ public class SolrRetriever {
     /**
      * Updates the SOLR record with the given id, so it has this service as the 'last_modified_by' user. 
      * @param id The ID of the SOLR record to update.
+     * @param updateUser The solr modify user to update the record.
      * @throws IOException If it fails to update.
      */
-    public void updateRecord(String id) throws IOException {
+    public void updateRecord(String id, String updateUser) throws IOException {
         try (SolrClient client = new HttpSolrClient.Builder(conf.getSolrUrl()).build()) {
             SolrInputDocument updateDoc = new SolrInputDocument();
             
             updateDoc.addField(FIELD_ID, id);
             
-            Map<String,Object> fieldModifier = new HashMap<>(1);
-            fieldModifier.put(SOLR_UPDATE_ACTION_SET, CROWD_SERVICE_MODIFY_USER);
-            updateDoc.addField(FIELD_MODIFY_USER, fieldModifier);
+            Map<String,Object> userFieldModifier = new HashMap<>(1);
+            userFieldModifier.put(SOLR_UPDATE_ACTION_SET, updateUser);
+            updateDoc.addField(FIELD_MODIFY_USER, userFieldModifier);
+            Map<String,Object> readyFieldModifier = new HashMap<>(1);
+            readyFieldModifier.put(SOLR_UPDATE_ACTION_SET, Boolean.FALSE.toString());
+            updateDoc.addField(FIELD_CCS_READY, readyFieldModifier);
             
             UpdateRequest request = new UpdateRequest();
             request.add(updateDoc);

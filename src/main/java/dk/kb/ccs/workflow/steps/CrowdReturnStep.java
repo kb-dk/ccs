@@ -1,12 +1,13 @@
 package dk.kb.ccs.workflow.steps;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.ccs.CumulusWrapper;
+import dk.kb.ccs.reporting.Reporter;
 import dk.kb.ccs.solr.CcsRecord;
 import dk.kb.ccs.solr.SolrRetriever;
 import dk.kb.ccs.solr.SolrSearchResult;
@@ -17,31 +18,45 @@ import dk.kb.ccs.solr.SolrSearchResult;
  */
 public class CrowdReturnStep extends WorkflowStep {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(CrowdReturnStep.class);
+    protected final Logger log = LoggerFactory.getLogger(CrowdReturnStep.class);
     
     /** The Cumulus retriever, for finding the Cumulus records for the COP records.*/
     protected final CumulusWrapper cumulusWrapper;
     /** The SOLR retriever for searchin, find and updating data.*/
     protected final SolrRetriever solrRetriever;
+    /** The Reporter for reporting the results of each run.*/
+    protected final Reporter report;
     
     /**
      * Constructor.
-     * @param cumulusWrapper The CumulusRetriever.
+     * @param cumulusWrapper The CumulusRetriever for interacting with Cumulus. 
+     * @param solrRetriever The SolrRetriever for interacting with SOLR.
+     * @param report The reporter for reporting the results of each run.
      */
-    public CrowdReturnStep(CumulusWrapper cumulusWrapper, SolrRetriever solrRetriever) {
+    public CrowdReturnStep(CumulusWrapper cumulusWrapper, SolrRetriever solrRetriever, Reporter report) {
         this.cumulusWrapper = cumulusWrapper;
         this.solrRetriever = solrRetriever;
+        this.report = report;
     }
     
     @Override
     protected void runStep() throws IOException {
+        Date startDate = new Date();
         SolrSearchResult res = solrRetriever.findIDsForCrowd();
+        long countSuccess = 0L;
+        long countFailure = 0L;
         for(String id : res.getIds()) {
-            System.err.println(id);
-//            handleCrowdSourcedRecord(id);
+            try {
+                handleCrowdSourcedRecord(id);
+                countSuccess++;
+            } catch (Exception e) {
+                solrRetriever.updateRecord(id, SolrRetriever.SOLR_MODIFY_USER_FAILURE);
+                log.warn("Could not handle the record for id '" + id +"'. Trying to continue.", e);
+                countFailure++;
+            }
         }
-        System.err.println("Has more results: " + res.getHasMoreResults());
-        // TODO needs some reporting.
+        report.addResult(startDate, countSuccess);
+        setResultOfRun("Handled " + countSuccess + " successfully, and " + countFailure + " failures.");
     }
     
     /**
@@ -55,7 +70,7 @@ public class CrowdReturnStep extends WorkflowStep {
         log.info("Handling the crowd sourced material for id '" + id + "'.");
         CcsRecord record = solrRetriever.getRecordForId(id);
         cumulusWrapper.ccsUpdate(record);
-        solrRetriever.updateRecord(id);
+        solrRetriever.updateRecord(id, SolrRetriever.SOLR_MODIFY_USER_CROWD_SERVICE);
     }
     
     @Override
