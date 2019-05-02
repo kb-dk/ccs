@@ -22,6 +22,9 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ml-auto">
+                <li class="nav-item <c:if test="${page=='ccs'}">active</c:if>">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/ccs">CCS configuration</a>
+                </li>
                 <li class="nav-item <c:if test="${page=='workflow'}">active</c:if>">
                     <a class="nav-link" href="${pageContext.request.contextPath}/workflow">Workflow</a>
                 </li>

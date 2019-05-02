@@ -87,21 +87,29 @@ public class CumulusWrapper {
     public void ccsUpdate(CcsRecord ccsRecord) {
         CumulusRecord record = findRecord(ccsRecord.getCatalogName(), ccsRecord.getRecordName());
 
-        setFieldValueInRecord(record, "Crowd_Titel", ccsRecord.getTitel());
-        setFieldValueInRecord(record, "Crowd_Person", ccsRecord.getPerson());
-        setFieldValueInRecord(record, "Crowd_Bygningsnavn", ccsRecord.getBygningsnavn());
-        setFieldValueInRecord(record, "Crowd_Sted", ccsRecord.getSted());
-        setFieldValueInRecord(record, "Crowd_Vejnavn", ccsRecord.getVejnavn());
-        setFieldValueInRecord(record, "Crowd_Husnummer", ccsRecord.getHusnummer());
-        setFieldValueInRecord(record, "Crowd_Lokalitet", ccsRecord.getLokalitet());
-        setFieldValueInRecord(record, "Crowd_Postnummer", ccsRecord.getPostnummer());
-        setFieldValueInRecord(record, "Crowd_By", ccsRecord.getBy());
-        setFieldValueInRecord(record, "Crowd_Sogn", ccsRecord.getSogn());
-        setFieldValueInRecord(record, "Crowd_Matrikelnummer", ccsRecord.getMatrikelnummer());
-        setFieldValueInRecord(record, "Crowd_Note", ccsRecord.getNote());
-        setFieldValueInRecord(record, "Crowd_Kommentar", ccsRecord.getKommentar());
-        setFieldValueInRecord(record, "Crowd_Emneord", ccsRecord.getEmneord());
-        setFieldValueInRecord(record, "Crowd_Georeference", ccsRecord.getGeoreference());
+        boolean updated = false;
+        updated = setFieldValueInRecord(record, "Crowd_Titel", ccsRecord.getTitel()) || updated;
+        updated = setFieldValueInRecord(record, "Crowd_Person", ccsRecord.getPerson()) || updated;
+        updated = setFieldValueInRecord(record, "Crowd_Bygningsnavn", ccsRecord.getBygningsnavn()) || updated;
+        updated = setFieldValueInRecord(record, "Crowd_Sted", ccsRecord.getSted()) || updated;
+        updated = setFieldValueInRecord(record, "Crowd_Vejnavn", ccsRecord.getVejnavn()) || updated;
+        updated = setFieldValueInRecord(record, "Crowd_Husnummer", ccsRecord.getHusnummer()) || updated;
+        updated = setFieldValueInRecord(record, "Crowd_Lokalitet", ccsRecord.getLokalitet()) || updated;
+        updated = setFieldValueInRecord(record, "Crowd_Postnummer", ccsRecord.getPostnummer()) || updated;
+        updated = setFieldValueInRecord(record, "Crowd_By", ccsRecord.getBy()) || updated;
+        updated = setFieldValueInRecord(record, "Crowd_Sogn", ccsRecord.getSogn()) || updated;
+        updated = setFieldValueInRecord(record, "Crowd_Matrikelnummer", ccsRecord.getMatrikelnummer())
+                || updated;
+        updated = setFieldValueInRecord(record, "Crowd_Note", ccsRecord.getNote()) || updated;
+        updated = setFieldValueInRecord(record, "Crowd_Kommentar", ccsRecord.getKommentar()) || updated;
+        updated = setFieldValueInRecord(record, "Crowd_Emneord", ccsRecord.getEmneord()) || updated;
+        updated = setFieldValueInRecord(record, "Crowd_Georeference", ccsRecord.getGeoreference()) || updated;
+
+        if(updated) {
+            log.info("Updated record: " + ccsRecord.getRecordName() + " " + record.toString());
+        } else {
+            log.info("No updating for record: " + ccsRecord.getRecordName());
+        }
     }
     
     /**
@@ -109,11 +117,13 @@ public class CumulusWrapper {
      * @param record The record to update.
      * @param fieldName The field to update.
      * @param value The value to update with.
+     * @return Whether or not it is updated.
      */
-    protected void setFieldValueInRecord(CumulusRecord record, String fieldName, String value) {
+    protected boolean setFieldValueInRecord(CumulusRecord record, String fieldName, String value) {
         if(value == null) {
-            return;
+            return false;
         }
         record.setStringValueInField(fieldName, value);
+        return true;
     }
 }
